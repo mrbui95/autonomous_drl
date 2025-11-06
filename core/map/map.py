@@ -3,7 +3,7 @@ import numpy as np
 import time
 import osmnx as ox
 
-from config.config import map_cfg
+from config.config import map_config
 
 from core.geometry.graph import Graph
 from core.geometry.line import Line
@@ -96,7 +96,7 @@ class Map:
         # Khởi tạo bản đồ
         if not from_file:
             self.make_map()
-        elif not map_cfg["real_map"]:
+        elif not map_config["real_map"]:
             self.load_map()
 
         self.__real_map_ready = False
@@ -156,7 +156,7 @@ class Map:
             )
             x_pos += distance_increment
             new_horizontal_line = base_horizontal_line.get_line_from_angle(
-                pnt=Point(x_pos, y_pos), angle=angle_variation
+                point=Point(x_pos, y_pos), angle_deg=angle_variation
             )
             traffic_state = self.__random.choice(
                 Map.traffic_states,
@@ -180,7 +180,7 @@ class Map:
             )
             y_pos += distance_increment
             new_vertical_line = base_vertical_line.get_line_from_angle(
-                pnt=Point(x_pos, y_pos), angle=angle_variation
+                point=Point(x_pos, y_pos), angle_deg=angle_variation
             )
             traffic_state = self.__random.choice(
                 Map.traffic_states,
@@ -195,7 +195,7 @@ class Map:
         - Nếu là bản đồ tổng hợp (synthetic), xác định các giao lộ và phân đoạn đường.
         - Nếu là bản đồ thực (real map), tạo HMap và lấy các phân đoạn, thông tin đường và giao lộ.
         """
-        if not map_cfg["real_map"]:
+        if not map_config["real_map"]:
             # Khởi tạo dictionary để vẽ phân đoạn theo trạng thái giao thông
             self.__segments_by_state = {0: [], 1: [], 2: [], 3: [], 4: []}
 
@@ -204,7 +204,7 @@ class Map:
 
             # Reset danh sách phân đoạn
             self.__segments = []
-            Segment.segID = 0
+            Segment.segment_counter = 0
 
             # Tạo các phân đoạn cho từng đường
             for road in self.__roads:
@@ -214,13 +214,13 @@ class Map:
 
                 # Lưu trữ các điểm phân đoạn để vẽ
                 for segment in road_segments:
-                    status = segment.get_state()
+                    status = segment.get_status()
                     self.__segments_by_state[status].append(segment.get_points())
 
         else:
             # Bản đồ thực: tạo RealMap
             self.__real_map = RealMap(
-                center_point=map_cfg["real_center_point"], radius=map_cfg["radius"]
+                center_point=map_config["real_center_point"], radius=map_config["radius"]
             )
 
             # Xây dựng bản đồ thực
@@ -315,18 +315,18 @@ class Map:
         - Nếu là bản đồ tổng hợp (synthetic), vẽ các đường ngang và dọc.
         - Nếu là bản đồ thực (real map), tải đồ thị từ OSM và vẽ các tuyến đường chính.
         """
-        if not map_cfg["real_map"]:
+        if not map_config["real_map"]:
             for idx, road in enumerate(self.roads):
                 x_coords, y_coords = road.get_line().get_points(5000)
                 plt.plot(x_coords, y_coords, label=f"road_{idx}")
             plt.xlim(0, 5000)
             plt.ylim(0, 5000)
-            plt.savefig("./map.png", dpi=300)
+            plt.savefig("./data/map.png", dpi=300)
             plt.close()
         else:
             custom_filter = '["highway"~"motorway|trunk|primary|secondary|tertiary"]'
-            center = map_cfg["real_center_point"]
-            radius = map_cfg["radius"]
+            center = map_config["real_center_point"]
+            radius = map_config["radius"]
             G = ox.graph_from_point(
                 center, dist=radius, custom_filter=custom_filter, network_type="drive"
             )
@@ -335,7 +335,7 @@ class Map:
             edge_colors = ["blue" for _ in G.edges()]
 
             ox.plot_graph(G, edge_color=edge_colors, edge_linewidth=2, node_size=0)
-            plt.savefig("./map.png", dpi=300)
+            plt.savefig("./data/map.png", dpi=300)
             plt.close()
 
     def get_segments(self):
@@ -364,7 +364,7 @@ class Map:
 
         fig, ax = plt.subplots(figsize=(10, 10))
 
-        if not map_cfg["real_map"]:
+        if not map_config["real_map"]:
             for state, segments_list in self.__draw_d.items():
                 for x_vals, y_vals in segments_list:
                     ax.plot(x_vals, y_vals, color=color_map[state], linewidth=2)
@@ -376,13 +376,13 @@ class Map:
                 x_vals = [start_point.get_point()[0], end_point.get_point()[0]]
                 y_vals = [start_point.get_point()[1], end_point.get_point()[1]]
                 ax.plot(
-                    x_vals, y_vals, color=color_map[segment.get_state()], linewidth=2
+                    x_vals, y_vals, color=color_map[segment.get_status()], linewidth=2
                 )
 
         ax.set_title("City Map from Segments")
         ax.set_xlabel("Longitude")
         ax.set_ylabel("Latitude")
-        plt.savefig(f"./current_map_seg{self.__busy}.png", dpi=300)
+        plt.savefig(f"./current_map_seg{self.__current_traffic_state}.png", dpi=300)
         plt.close()
 
     def check_valid_next_intersections(self, current_point, visited_points):

@@ -4,7 +4,7 @@ import osmnx as ox
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from config.config import map_cfg
+from config.config import map_config
 from core.geometry.segment import Segment
 from core.map.utils import create_segments, get_road_segments
 
@@ -32,10 +32,10 @@ class RealMap:
             center_point (tuple): Tọa độ trung tâm (lat, long).
             radius (float): Bán kính xung quanh center_point để lấy bản đồ (m).
         """
-        map_folder = "map"
-        file_path = os.path.join(map_folder, "map.pkl")
 
-        if not map_cfg['from_file']:
+        file_path = "./data/map.pkl"
+
+        if not map_config['from_file']:
             # Lọc các loại đường quan tâm
             custom_filter = '["highway"~"motorway|trunk|primary|secondary|tertiary"]'
             G = ox.graph_from_point(
@@ -57,9 +57,6 @@ class RealMap:
             largest_component = max(nx.strongly_connected_components(G), key=len)
             self.G = G.subgraph(largest_component).copy()
 
-            # Tạo thư mục map nếu chưa có
-            if not os.path.exists(map_folder):
-                os.makedirs(map_folder)
             # Lưu đồ thị vào file
             with open(file_path, 'wb') as f:
                 pickle.dump(self.G, f)
@@ -69,7 +66,7 @@ class RealMap:
                 with open(file_path, 'rb') as f:
                     self.G = pickle.load(f)
             except:
-                print("Error: Không tìm thấy file map.pkl. Hãy đặt map_cfg['from_file'] = 0 để tải từ OSM.")
+                print("Error: Không tìm thấy file ./data/map.pkl. Hãy đặt map_config['from_file'] = 0 để tải từ OSM.")
                 exit(0)
 
         # Vẽ đồ thị
@@ -84,10 +81,10 @@ class RealMap:
         nx.draw_networkx_nodes(
             self.G, node_positions, node_size=10, node_color='red', ax=ax
         )
-        plt.savefig("map.png", dpi=300)
+        plt.savefig("./data/map.png", dpi=300)
         plt.close()
 
-    def build_map(self, traffic_states, traffic_probs, current_state, random):
+    def build_map(self, traffic_states, traffic_probs, current_traffic_state, random):
         """
         Xây dựng segment từ đồ thị và cập nhật trạng thái giao thông cho từng đoạn đường.
         
@@ -105,7 +102,7 @@ class RealMap:
         """
         self.__road_info = get_road_segments(self.G)
         segments, all_intersections, road_info_updated = self.update_segments(
-            random, traffic_states, traffic_probs, current_state
+            random, traffic_states, traffic_probs, current_traffic_state
         )
         return segments, road_info_updated, all_intersections
 
@@ -127,7 +124,7 @@ class RealMap:
         all_intersections = set()
         road_info_updated = {}
 
-        for road, road_segs in self.road_segments.items():
+        for road, road_segs in self.__road_info.items():
             # Chọn trạng thái ngẫu nhiên cho đường
             road_state = random.choice(traffic_states, p=traffic_probs[current_traffic_state])
             segment_list, avg_task_rate, avg_speed, intersections = create_segments(
@@ -137,7 +134,7 @@ class RealMap:
             all_intersections.update(intersections)
             segments += segment_list
 
-        Segment.segID = 0
+        Segment.segment_counter = 0
         return segments, all_intersections, road_info_updated
     
     

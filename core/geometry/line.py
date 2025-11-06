@@ -1,5 +1,7 @@
 import numpy as np
-from point import Point
+
+from core.geometry.point import Point
+
 
 
 class Line:

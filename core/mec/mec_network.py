@@ -1,6 +1,6 @@
 import numpy as np
 
-from config.config import SEED_GLOBAL, network_cfg
+from config.config import SEED_GLOBAL, network_config
 from core.geometry.point import Point
 from core.mec.mec import MEC
 
@@ -36,15 +36,15 @@ class MECNetwork:
         # Lấy ngẫu nhiên vị trí MEC
         mec_positions = self.__random.choice(
             intersections,
-            network_cfg['maximum_MECs'],
+            network_config['maximum_MECs'],
             replace=False
         )
         
         # Sinh ngẫu nhiên tần số CPU cho từng MEC
         mec_cpu_freq = self.__random.integers(
-            network_cfg['cpu_freq_range'][0],
-            network_cfg['cpu_freq_range'][1],
-            network_cfg['maximum_MECs']
+            network_config['cpu_freq_range'][0],
+            network_config['cpu_freq_range'][1],
+            network_config['maximum_MECs']
         )
 
         # Tạo danh sách đối tượng MEC
@@ -132,7 +132,7 @@ class MECNetwork:
             distance = vehicle_pos.get_dis_to_point(mec_position)
 
             # Thêm vào danh sách ứng viên nếu trong vùng tốt
-            if distance < network_cfg['best_rate_radius']:
+            if distance < network_config['best_rate_radius']:
                 candidate_mecs.append((mec_position, mec_cpu_freq))
 
             # Cập nhật MEC gần nhất

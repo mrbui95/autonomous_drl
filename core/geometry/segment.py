@@ -3,7 +3,7 @@ from core.geometry.point import Point
 
 
 class Segment:
-    segID = 0
+    segment_counter = 0
 
     """
     Segment đại diện cho một đoạn đường (hoặc kết nối) giữa hai điểm trong hệ thống.
@@ -40,7 +40,7 @@ class Segment:
         self.__end_point = end_point
         self.__status = status
         self.__line = line
-        self.__sid = Segment.segID
+        self.__segment_id = Segment.segment_counter
         if distance != None:
             self.__distance = distance
         else:
@@ -50,7 +50,7 @@ class Segment:
         self.__offloading_tasks = []
         self.__task_rate = task_rate
         self.__avg_speed = avg_speed
-        Segment.segID += 1
+        Segment.segment_counter += 1
 
     def get_segment(self):
         return (
@@ -58,7 +58,7 @@ class Segment:
             self.__end_point,
             self.__line,
             self.__status,
-            self.__sid,
+            self.__segment_id,
         )
 
     def get_info(self):
@@ -77,14 +77,14 @@ class Segment:
     def get_distance(self):
         return self.__distance
 
-    def get_state(self):
+    def get_status(self):
         return self.__status
 
-    def get_sid(self):
-        return self.__sid
+    def get_segment_id(self):
+        return self.__segment_id
 
     def reset(self):
-        Segment.segID = 0
+        Segment.segment_counter = 0
 
     def __str__(self):
         return "[" + str(self.__start_point) + "; " + str(self.__end_point) + "]"
@@ -92,7 +92,7 @@ class Segment:
     def __eq__(self, other):
         """So sánh hai đoạn đường theo ID, điểm hoặc tuple điểm."""
         if isinstance(other, Segment):
-            return self.__sid == other.__sid
+            return self.__segment_id == other.__segment_id
         elif isinstance(other, tuple) and len(other) == 2:
             # So sánh hai điểm đầu-cuối (không phân biệt thứ tự)
             return (
@@ -103,7 +103,7 @@ class Segment:
             return other == self.__start_point or other == self.__end_point
         elif isinstance(other, int):
             # So sánh theo ID
-            return self.__sid == other
+            return self.__segment_id == other
         return False
 
     def get_points(self, step=1):

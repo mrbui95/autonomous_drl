@@ -62,7 +62,7 @@ class Road:
         Road.next_id += 1
 
         self.__random = np.random.default_rng(42)
-        self.__distance = self.rng.integers(
+        self.__distance = self.__random.integers(
             Road.distance_range[0], Road.distance_range[1]
         )
         self.__geometry_line = geometry_line
@@ -105,7 +105,7 @@ class Road:
 
     def get_intersection_point(self, other_road, map_width, map_height):
         """Trả về giao điểm giữa hai tuyến đường trong giới hạn bản đồ."""
-        return self.__line.intersection_point(other_road.get_line(), map_width, map_height)
+        return self.__geometry_line.intersection_point(other_road.get_line(), map_width, map_height)
     
     def update_id(self, val):
         """Cập nhật mã định danh (ID) của tuyến đường."""
@@ -113,7 +113,7 @@ class Road:
 
     def __eq__(self, other):
         """So sánh hai tuyến đường theo ID."""
-        return self.__id == other.get_rid()
+        return self.__id == other.get_id()
 
     def __str__(self):
         """Trả về chuỗi biểu diễn tuyến đường gồm ID, tọa độ và độ dốc."""

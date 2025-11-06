@@ -10,14 +10,14 @@ Các tham số:
 - load_from_file (bool|int): Nếu True, khởi tạo bản đồ từ file; nếu False, tạo mới.
 """
 
-map_cfg = {
+map_config = {
     "real_map": True,
     "real_center_point": (
         20.9816147,
         105.7862841,
     ),  # Post and Telecommunications Institute of Technology
     "radius": 2500,
-    "n_lines": 15,
+    "num_roads": 15,
     "busy": 1,
     "from_file": 0,
 }
@@ -65,10 +65,61 @@ Các khóa cấu hình:
         Bán kính vùng phủ sóng tối ưu (tính bằng mét).  
         Nếu thiết bị nằm trong phạm vi này so với MEC, tốc độ truyền dữ liệu được coi là tốt nhất.
 """
-network_cfg = {
+network_config = {
     "maximum_MECs": 20,
     "cpu_freq_range": [100, 300], # 100 -300 (Hz)
     "best_rate_radius":  100 # 100(m)
+}
+
+"""
+Cấu hình các tham số mô phỏng tác vụ (Task Configuration).
+
+Thuộc tính:
+-----------
+data_size_range : list[int, int]
+    Phạm vi kích thước dữ liệu truyền (tính bằng kilobyte - kB).
+compute_load_range : list[int, int]
+    Phạm vi khối lượng tính toán (tính bằng megacycles - MCycles).
+task_rate_options : list[int]
+    Các giá trị cường độ sinh tác vụ (task/giây).
+avg_speed : float
+    Vận tốc trung bình của phương tiện (mét/giây).
+time_limit : float
+    Giới hạn thời gian hoàn thành nhiệm vụ (phút).
+cost_coefficient : float
+    Hệ số chi phí xử lý tác vụ, ảnh hưởng đến lợi nhuận cuối cùng.
+max_speed : float
+    Vận tốc cực đại của phương tiện (mét/giây).
+"""
+tau = 60
+task_config = {
+    'data_size_range': [100, 500],     # Kích thước dữ liệu truyền (kB)
+    'compute_load_range': [1, 3],      # Khối lượng tính toán (MCycles)
+    'task_rate_options': [10, 30, 50], # Các giá trị tốc độ sinh tác vụ (task/s)
+    'avg_speed': 10,                   # Vận tốc trung bình của xe (m/s)
+    'time_limit': tau,                 # Giới hạn thời gian hoàn thành nhiệm vụ (phút)
+    'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ
+    'max_speed': 20                    # Vận tốc cực đại của xe (m/s)
+}
+
+"""
+Cấu hình tổng thể cho hệ thống phân phối nhiệm vụ.
+
+Các tham số:
+    total_missions (int): Tổng số nhiệm vụ cần được giao trong hệ thống.
+    reward_range (list[int, int]): Khoảng giá trị phần thưởng cho mỗi nhiệm vụ, biểu thị lợi ích tiềm năng.
+    num_vehicles (int): Số lượng phương tiện (hoặc tác nhân) tham gia thực hiện nhiệm vụ.
+    max_missions_per_vehicle (int): Giới hạn số nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận cùng lúc.
+
+Mục đích:
+    Cấu hình này được dùng để khởi tạo dữ liệu đầu vào cho mô phỏng hoặc thuật toán 
+    phân phối nhiệm vụ giữa các phương tiện trong hệ thống tự hành hoặc hệ thống đa tác nhân.
+"""
+mission_config = {
+    'total_missions': 25,          # Tổng số nhiệm vụ cần được phân bổ trong hệ thống.
+    'reward_range': [50, 100],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
+    'num_vehicles': 5,             # Số lượng phương tiện tham gia thực hiện nhiệm vụ.
+    'max_missions_per_vehicle': 5  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
 }
 
 

@@ -168,13 +168,13 @@ def create_segments(road_state, segment_data, random):
 
         # Tạo đối tượng Segment
         segment_obj = Segment(
-            start=start_point,
-            end=end_point,
+            start_point=start_point,
+            end_point=end_point,
             status=segment_status,
             line=None,
             task_rate=task_rate,
-            speed=avg_speed,
-            length=length
+            avg_speed=avg_speed,
+            distance=length
         )
         list_segments.append(segment_obj)
 
