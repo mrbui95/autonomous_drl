@@ -1,0 +1,5 @@
+geopy
+matplotlib
+numpy==1.24.4
+osmnx
+networkx
