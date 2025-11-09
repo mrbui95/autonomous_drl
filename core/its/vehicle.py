@@ -90,7 +90,8 @@ class Vehicle(Observer):
         self.__on_time = True
 
         # MEC (Mobile Edge Computing) mà phương tiện đang liên kết
-        self.__assigned_mec = MECNetwork.generate_mec_list(road_map.get_intersections())
+        mec_network = MECNetwork()
+        self.__assigned_mec = mec_network.generate_mec_list(road_map.get_intersections())
 
         # Cờ cho phép xử lý nhiệm vụ không theo thứ tự ưu tiên
         self.__non_priority_orders = non_priority_orders
@@ -110,6 +111,7 @@ class Vehicle(Observer):
         """Cập nhật vị trí hiện tại của phương tiện."""
         self.__current_position = position
 
+    @staticmethod
     def reset_vehicle_id_counter():
         """Đặt lại bộ đếm ID cho tất cả phương tiện."""
         Vehicle.vehicle_counter = 0
@@ -117,6 +119,10 @@ class Vehicle(Observer):
     def get_control_time(self):
         """Trả về thời gian điều khiển hiện tại của phương tiện."""
         return self.__control_time
+    
+    def get_accepted_missions(self):
+        """Trả về Danh sách nhiệm vụ đã chấp nhận nhưng chưa bắt đầu."""
+        return self.__accepted_missions
 
     def assign_missions(self, solution, mission_list=[], has_order_tuple=False):
         """

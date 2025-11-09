@@ -14,3 +14,9 @@ Tạo bản đồ, nhiệm vụ:
 venv\Scripts\activate
 python -m data.generator
 ```
+
+Train
+```bash
+venv\Scripts\activate
+python -m train.trainer
+```

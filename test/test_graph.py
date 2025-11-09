@@ -64,5 +64,5 @@ for i in range(len(shortest_path)-1):
 
 plt.title("Graph Visualization with Shortest Path Highlighted")
 plt.grid(True)
-plt.show()
+# plt.show()
 

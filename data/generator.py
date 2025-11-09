@@ -4,7 +4,7 @@ from core.task_generator import TaskGenerator
 from config.config import map_config, task_config, mission_config
 
 def generate(mission_file_name="mission_information.json"):
-    map = Map(total_roads=map_config["num_roads"], current_traffic_state=map_config["busy"], from_file=map_config["from_file"])
+    map = Map(total_roads=map_config["num_roads"], current_traffic_state=map_config["traffic_level"], from_file=map_config["from_file"])
     tg = TaskGenerator(
         tau=task_config["time_limit"],
         road_map=map,

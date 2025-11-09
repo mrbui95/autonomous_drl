@@ -1,3 +1,14 @@
+map_config = {
+    "real_map": True,
+    "real_center_point": (
+        20.9816147,
+        105.7862841,
+    ),  # Post and Telecommunications Institute of Technology
+    "radius": 2500,
+    "num_roads": 15,
+    "traffic_level": 1,
+    "from_file": 0,
+}
 """
 Cấu hình bản đồ cho đối tượng Map.
 
@@ -10,19 +21,15 @@ Các tham số:
 - load_from_file (bool|int): Nếu True, khởi tạo bản đồ từ file; nếu False, tạo mới.
 """
 
-map_config = {
-    "real_map": True,
-    "real_center_point": (
-        20.9816147,
-        105.7862841,
-    ),  # Post and Telecommunications Institute of Technology
-    "radius": 2500,
-    "num_roads": 15,
-    "busy": 1,
-    "from_file": 0,
+
+
+traffic_profiles = {
+    0: {"prob": None, "states": [0], "speed": 20, "task_rate": 20},                                 # Lưu thông tự do
+    1: {"prob": [0.95, 0.05], "states": [0, 1], "speed": 17, "task_rate": 30},                      # Ổn định
+    2: {"prob": [0.7, 0.25, 0.05], "states": [0, 1, 2], "speed": 14, "task_rate": 40},              # Chậm
+    3: {"prob": [0.5, 0.25, 0.2, 0.05], "states": [0, 1, 2, 3], "speed": 10, "task_rate": 50},      # Tắc nghẽn
+    4: {"prob": [0.2] * 5, "states": [0, 1, 2, 3, 4], "speed": 5, "task_rate": 60},                 # Tắc nghẽn nghiêm trọng
 }
-
-
 """
 Bảng cấu hình mô tả các trạng thái giao thông và thông số tương ứng.
 
@@ -39,17 +46,19 @@ Các giá trị gồm:
     speed (float): Vận tốc trung bình (m/s).
     task_rate (float): Tốc độ sinh tác vụ (tasks/s).
 """
-traffic_profiles = {
-    0: {"prob": None, "states": [0], "speed": 20, "task_rate": 20},                                 # Lưu thông tự do
-    1: {"prob": [0.95, 0.05], "states": [0, 1], "speed": 17, "task_rate": 30},                      # Ổn định
-    2: {"prob": [0.7, 0.25, 0.05], "states": [0, 1, 2], "speed": 14, "task_rate": 40},              # Chậm
-    3: {"prob": [0.5, 0.25, 0.2, 0.05], "states": [0, 1, 2, 3], "speed": 10, "task_rate": 50},      # Tắc nghẽn
-    4: {"prob": [0.2] * 5, "states": [0, 1, 2, 3, 4], "speed": 5, "task_rate": 60},                 # Tắc nghẽn nghiêm trọng
-}
 
 # Hạt giống ngẫu nhiên sinh MEC
 SEED_GLOBAL = 42
 
+# Cấu hình dùng GPU số mấy
+DEVICE = 1
+
+
+network_config = {
+    "maximum_MECs": 20,
+    "cpu_freq_range": [100, 300], # 100 -300 (Hz)
+    "best_rate_radius":  100 # 100(m)
+}
 """
 Cấu hình các tham số cho mạng MEC (Mobile Edge Computing).
 
@@ -65,12 +74,25 @@ Các khóa cấu hình:
         Bán kính vùng phủ sóng tối ưu (tính bằng mét).  
         Nếu thiết bị nằm trong phạm vi này so với MEC, tốc độ truyền dữ liệu được coi là tốt nhất.
 """
-network_config = {
-    "maximum_MECs": 20,
-    "cpu_freq_range": [100, 300], # 100 -300 (Hz)
-    "best_rate_radius":  100 # 100(m)
+
+
+other_config = {
+    'apply_thread': 0,
+    'apply_detach': 0,
+    'score_window_size': 100,
+    'tau': 60
 }
 
+
+task_config = {
+    'data_size_range': [100, 500],     # Kích thước dữ liệu truyền (kB)
+    'compute_load_range': [1, 3],      # Khối lượng tính toán (MCycles)
+    'task_rate_options': [10, 30, 50], # Các giá trị tốc độ sinh tác vụ (task/s)
+    'avg_speed': 10,                   # Vận tốc trung bình của xe (m/s)
+    'time_limit': other_config['tau'],                 # Giới hạn thời gian hoàn thành nhiệm vụ (phút)
+    'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ
+    'max_speed': 20                    # Vận tốc cực đại của xe (m/s)
+}
 """
 Cấu hình các tham số mô phỏng tác vụ (Task Configuration).
 
@@ -91,17 +113,14 @@ cost_coefficient : float
 max_speed : float
     Vận tốc cực đại của phương tiện (mét/giây).
 """
-tau = 60
-task_config = {
-    'data_size_range': [100, 500],     # Kích thước dữ liệu truyền (kB)
-    'compute_load_range': [1, 3],      # Khối lượng tính toán (MCycles)
-    'task_rate_options': [10, 30, 50], # Các giá trị tốc độ sinh tác vụ (task/s)
-    'avg_speed': 10,                   # Vận tốc trung bình của xe (m/s)
-    'time_limit': tau,                 # Giới hạn thời gian hoàn thành nhiệm vụ (phút)
-    'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ
-    'max_speed': 20                    # Vận tốc cực đại của xe (m/s)
-}
 
+
+mission_config = {
+    'total_missions': 25,          # Tổng số nhiệm vụ cần được phân bổ trong hệ thống.
+    'reward_range': [50, 100],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
+    'num_vehicles': 5,             # Số lượng phương tiện tham gia thực hiện nhiệm vụ.
+    'max_missions_per_vehicle': 5  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
+}
 """
 Cấu hình tổng thể cho hệ thống phân phối nhiệm vụ.
 
@@ -115,11 +134,6 @@ Mục đích:
     Cấu hình này được dùng để khởi tạo dữ liệu đầu vào cho mô phỏng hoặc thuật toán 
     phân phối nhiệm vụ giữa các phương tiện trong hệ thống tự hành hoặc hệ thống đa tác nhân.
 """
-mission_config = {
-    'total_missions': 25,          # Tổng số nhiệm vụ cần được phân bổ trong hệ thống.
-    'reward_range': [50, 100],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
-    'num_vehicles': 5,             # Số lượng phương tiện tham gia thực hiện nhiệm vụ.
-    'max_missions_per_vehicle': 5  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
-}
+
 
 

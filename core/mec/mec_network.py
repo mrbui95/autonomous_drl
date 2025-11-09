@@ -48,7 +48,7 @@ class MECNetwork:
         )
 
         # Tạo danh sách đối tượng MEC
-        mec_list = [MEC(position=Point(pos[0], pos[1]), cpu_freq=freq) for pos, freq in zip(mec_positions, mec_cpu_freq)]
+        mec_list = [MEC(position=position, cpu_freq=freq) for position, freq in zip(mec_positions, mec_cpu_freq)]
         
         return mec_list
     

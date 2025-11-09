@@ -382,7 +382,7 @@ class Map:
         ax.set_title("City Map from Segments")
         ax.set_xlabel("Longitude")
         ax.set_ylabel("Latitude")
-        plt.savefig(f"./current_map_seg{self.__current_traffic_state}.png", dpi=300)
+        plt.savefig(f"./data/current_map_seg{self.__current_traffic_state}.png", dpi=300)
         plt.close()
 
     def check_valid_next_intersections(self, current_point, visited_points):

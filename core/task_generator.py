@@ -140,19 +140,19 @@ class TaskGenerator:
         num_with_depends = 0
 
         for i in range(num_missions):
-            start_p = self.__random.choice(vertices)
-            end_p = self.__random.choice(vertices)
-            distance = start_p.get_dis_to_point(end_p)
+            start_point = self.__random.choice(vertices)
+            end_point = self.__random.choice(vertices)
+            distance = start_point.get_dis_to_point(end_point)
             travel_time = distance / task_config["max_speed"]
 
             # Đảm bảo nhiệm vụ hợp lệ theo giới hạn thời gian
             while (
-                travel_time > task_config["tau"] * 60
+                travel_time > task_config["time_limit"] * 60
                 and travel_time < 50 / task_config["max_speed"]
             ):
-                start_p = self.__random.choice(vertices)
-                end_p = self.__random.choice(vertices)
-                distance = start_p.get_dis_to_point(end_p)
+                start_point = self.__random.choice(vertices)
+                end_point = self.__random.choice(vertices)
+                distance = start_point.get_dis_to_point(end_point)
                 travel_time = distance / task_config["max_speed"]
 
             dependencies = []
@@ -174,7 +174,7 @@ class TaskGenerator:
                 mission_config["reward_range"][0], mission_config["reward_range"][1]
             )
 
-            mission = Mission(start_p, end_p, tslot=0, graph=self.graph)
+            mission = Mission(start_point=start_point, end_point=end_point, time_slot=0, graph=self.graph)
             mission.set_depend_mission(dependencies)
             mission.set_profit(profit)
             mission.set_mission_id(i)

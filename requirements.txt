@@ -1,5 +1,10 @@
 geopy
+gymnasium
 matplotlib
+networkx
 numpy==1.24.4
 osmnx
-networkx
+pydantic
+ray
+ray[tune]
+torch
