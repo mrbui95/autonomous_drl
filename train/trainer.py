@@ -103,8 +103,8 @@ def create_trainer(
         max_episode_length=max_episode_length,
         update_frequency=update_interval,
         save_dir=save_directory,
-        thread=use_thread,
-        detach_thread=detach_thread,
+        use_thread=use_thread,
+        use_detach_thread=detach_thread,
         train_start_factor=2,
     )
 
@@ -131,14 +131,14 @@ def train_agents(
 
     for episode_idx in range(1, max_episodes + 1):
         # Thực hiện 1 bước huấn luyện (episode)
-        trainer.step()
+        trainer.run_episode()
 
         # In trạng thái huấn luyện định kỳ
         if episode_idx % 100 == 0:
             trainer.print_status()
 
         # Tính điểm trung bình của các episode gần nhất
-        recent_scores = np.array(trainer.score_history[-score_window:])
+        recent_scores = np.array(trainer.get_score_history()[:,-score_window:])
         mean_reward = np.max(recent_scores, axis=1).mean()
         print(
             f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
@@ -244,19 +244,19 @@ def run_ddqn_training(**kwargs):
         env,
         agents,
         save_dir,
-        thread=env_config["thread"],
-        detach_thread=env_config["detach_thread"],
+        use_thread=env_config["apply_thread"],
+        detach_thread=env_config["apply_detach"],
         score_window_size=env_config["score_window_size"],
-        max_eps_length=env_config["max_missions_per_vehicle"] * env_config["num_vehicles"],
-        type_="DDQNTrainer",
-        update_frequency=ddqn_config["batch_size"] / 4,
+        max_episode_length=env_config["max_missions_per_vehicle"] * env_config["num_vehicles"],
+        trainer_type="DDQNTrainer",
+        update_interval=ddqn_config["batch_size"] / 4,
     )
 
     print('-------------------trainer-----------------')
     print(trainer)
 
     # --- 9. Train agents ---
-    train_agents(env, trainer, score_window_size=env_config["score_window_size"])
+    train_agents(env, trainer, score_window=env_config["score_window_size"])
 
 if __name__ == '__main__':
     run_ddqn_training()

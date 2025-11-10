@@ -51,7 +51,7 @@ class DDQNTrainer:
 
         # --- Cấu hình lưu trữ ---
         self.__save_dir = save_dir
-        self.__checkpoints_dir = os.path.join(self.save_dir, "checkpoints")
+        self.__checkpoints_dir = os.path.join(self.__save_dir, "checkpoints")
 
         # --- Ghi log quá trình huấn luyện ---
         self.__score_history = []
@@ -78,6 +78,10 @@ class DDQNTrainer:
         else:
             print(f"⚠️ Thư mục '{self.__checkpoints_dir}' đã tồn tại — các checkpoint mới sẽ được ghi đè.")
 
+    def get_score_history(self):
+        """Lấy lịch sử điểm số (reward) qua các episode"""
+        return self.__score_history
+    
     def set_time_step(self, time_step):
         """Thay đổi giá trị time_step"""
         self.__time_step = time_step
@@ -91,7 +95,7 @@ class DDQNTrainer:
         Thực hiện hành động trong môi trường và trả về trạng thái, phần thưởng, cờ kết thúc và thông tin môi trường.
         """
         # Gọi môi trường thực thi hành động -> trả về thông tin sau bước
-        env_info = self.__env.step(actions, self.__agents, states)
+        env_info = self.__env.step(actions_by_vehicle = actions,states = states,  agents = self.__agents)
 
         # Tách các giá trị trả về từ môi trường
         next_states = env_info[0]   # Trạng thái kế tiếp
@@ -130,6 +134,8 @@ class DDQNTrainer:
 
         # === Khởi tạo danh sách điểm thưởng cho từng phương tiện ===
         total_rewards = []
+        self.__env.data = self.__env.get_environment_data()
+        
         for _ in range(self.__env.data['num_vehicles']):
             total_rewards.append([])
 
@@ -176,7 +182,7 @@ class DDQNTrainer:
 
             # --- Lưu kinh nghiệm vào bộ nhớ học tập của từng tác tử ---
             for agent, state, action, log_prob, reward, done, next_state in zip(
-                    self.__agents, processed_states, chosen_actions, log_probs,
+                    self.__agents, processed_states, action_dict, log_probs,
                     rewards, dones, next_states):
 
                 action_key = action_dict[action]
@@ -223,5 +229,5 @@ class DDQNTrainer:
             # --- Kết thúc episode nếu có agent hoàn thành ---
             if np.any(dones):
                 break
-
+        self.__score_history.append(total_rewards)
         return total_rewards

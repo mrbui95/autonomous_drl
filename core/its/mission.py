@@ -17,11 +17,11 @@ class Mission(Subject):
 
     Thuộc tính lớp:
         mission_counter (int): Biến đếm tĩnh, dùng để gán ID duy nhất cho mỗi nhiệm vụ.
-        STATUS (list[str]): Danh sách trạng thái: ["created", "in_progress", "completed"].
+        status (list[str]): Danh sách trạng thái: ["created", "in_progress", "done"].
 
     Thuộc tính đối tượng:
         __mission_id (int): ID duy nhất của nhiệm vụ.
-        __status (int): Trạng thái hiện tại (0 = created, 1 = in_progress, 2 = completed).
+        __status (int): Trạng thái hiện tại (0 = created, 1 = in_progress, 2 = done).
         __start_point (Point): Điểm bắt đầu của nhiệm vụ.
         __end_point (Point): Điểm đích của nhiệm vụ.
         __time_slot (int): Khoảng thời gian mà nhiệm vụ được giao.
@@ -55,7 +55,7 @@ class Mission(Subject):
     """
 
     mission_counter = 0
-    STATUS  = ["created", "in_progress", "completed"]
+    status  = ["created", "in_progress", "done"]
 
     def __init__(self, start_point, end_point, time_slot, graph, verbose=False):
         # Gán ID duy nhất cho nhiệm vụ
@@ -165,7 +165,7 @@ class Mission(Subject):
         removed_dependencies = 0
 
         # Nếu nhiệm vụ đã hoàn thành, thông báo cho các nhiệm vụ phụ thuộc
-        if Mission.STATUS[new_status] == "completed" and dependent_missions is not None:
+        if Mission.status[new_status] == "done" and dependent_missions is not None:
             print(f"Nhiệm vụ {self.get_mission_id()} thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.")
             for mission in dependent_missions:
                 dependencies = mission.get_dependencies()
@@ -188,7 +188,7 @@ class Mission(Subject):
 
     def print_status(self):
         """In ra trạng thái của nhiệm vụ ở dạng chữ."""
-        print(Mission.STATUS[self.__status])
+        print(Mission.status[self.__status])
 
 
     def get_start_point(self):
@@ -242,24 +242,24 @@ class Mission(Subject):
         return removed
     
     # === Nhóm các hàm xử lý phụ thuộc (dependency) ===
-    def update_status(self):
+    def update_status_using_dependence_list(self):
         self.__status = 1 if not self.__dependencies else 0
 
     def update_depend_mission(self, mission_id):
         """Thêm một nhiệm vụ phụ thuộc và cập nhật trạng thái."""
         self.__dependencies.append(mission_id)
-        self.update_status()
+        self.update_status_using_dependence_list()
 
     def set_depend_mission(self, missions):
         """Thiết lập danh sách các nhiệm vụ phụ thuộc và cập nhật trạng thái."""
         self.__dependencies = missions
-        self.update_status()
+        self.update_status_using_dependence_list()
 
     def remove_depend_mission(self, mission_id):
         """Xóa một nhiệm vụ phụ thuộc và cập nhật trạng thái."""
         if mission_id in self.__dependencies:
             self.__dependencies.remove(mission_id)
-        self.update_status()
+        self.update_status_using_dependence_list()
 
     
     def get_dependencies(self):

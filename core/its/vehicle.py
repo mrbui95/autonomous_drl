@@ -90,8 +90,8 @@ class Vehicle(Observer):
         self.__on_time = True
 
         # MEC (Mobile Edge Computing) mà phương tiện đang liên kết
-        mec_network = MECNetwork()
-        self.__assigned_mec = mec_network.generate_mec_list(road_map.get_intersections())
+        self.__mec_network = MECNetwork()
+        self.__assigned_mec = self.__mec_network.generate_mec_list(road_map.get_intersections())
 
         # Cờ cho phép xử lý nhiệm vụ không theo thứ tự ưu tiên
         self.__non_priority_orders = non_priority_orders
@@ -380,7 +380,7 @@ class Vehicle(Observer):
         """
 
         if len(self.__ready_missions) == 0 or not self.__on_time:
-            return
+            return True
 
         # Lấy nhiệm vụ đầu tiên trong danh sách sẵn sàng
         current_mission = self.__ready_missions.pop(0)
@@ -443,7 +443,7 @@ class Vehicle(Observer):
                 current_point = start_point
 
                 # Tính tốc độ truyền và năng lực tính toán tại MEC
-                rate, mec_cpu = MECNetwork.get_rate_and_mec_cpu(
+                rate, mec_cpu = self.__mec_network.get_rate_and_mec_cpu(
                     current_point, self.__assigned_mec
                 )
                 task_info = off_task.get_info()

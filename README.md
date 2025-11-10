@@ -18,5 +18,5 @@ python -m data.generator
 Train
 ```bash
 venv\Scripts\activate
-python -m train.trainer
+Hết thời gian thực hiện nhiệm vụHết thời gian thực hiện nhiệm vụ
 ```

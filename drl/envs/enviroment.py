@@ -13,7 +13,7 @@ from core.its.vehicle import Vehicle
 from core.task_generator import TaskGenerator
 from drl.envs.data_loader import DataLoader
 from drl.envs.utils import get_ideal_expected_reward
-
+import torch
 
 SEED = SEED_GLOBAL
 
@@ -64,7 +64,7 @@ class Environment(gym.Env):
         self.__action_space = Box(
             -np.inf, np.inf, shape=(data["total_missions"],), dtype="float32"
         )
-        self.__observation_space = Box(-np.inf, np.inf, shape=(14604, 1), dtype="float32")
+        self.__observation_space = Box(-np.inf, np.inf, shape=(1736, 1), dtype="float32")
 
         # Theo dõi trạng thái nội bộ
         self.__action_memory = np.zeros(data["total_missions"], dtype=int)
@@ -79,6 +79,10 @@ class Environment(gym.Env):
         # Giá trị phần thưởng trung bình lý tưởng cho mỗi phương tiện
         self.__ideal_avg_reward = get_ideal_expected_reward()
 
+    def get_environment_data(self):
+        """Trả về dữ liệu cấu hình môi trường."""
+        return self.__data
+    
     def get_map_obj(self):
         """Trả về Bản đồ của môi trường ITS."""
         return self.__map_obj
@@ -324,7 +328,7 @@ class Environment(gym.Env):
         # Trả về kết quả
         return observations
 
-    def step(self, actions_by_vehicle, agents=None):
+    def step(self, actions_by_vehicle, states, agents=None):
         """
         Thực hiện một bước (step) trong môi trường mô phỏng.
 
@@ -344,6 +348,8 @@ class Environment(gym.Env):
                 executed_actions (dict): Hành động thực tế đã được thực hiện (sau khi kiểm tra hợp lệ).
         """
         rewards = {}
+        for vehicle_index in range(self.__data["num_vehicles"]):
+            rewards[vehicle_index] = []
         executed_actions = {}
 
         # Áp dụng hành động cho từng phương tiện
@@ -362,10 +368,11 @@ class Environment(gym.Env):
                 # Áp dụng phạt nhẹ để tránh chọn trùng
                 rewards[vehicle_index] = [-0.01 * self.__ideal_avg_reward]
                 executed_actions[vehicle_index] = selected_action
-
+                
+                next_state_value = torch.tensor(states[f'vehicle_{vehicle_index}']).view(-1)            
                 # Lưu kinh nghiệm vào bộ nhớ học (replay buffer) của agent.
-                agent.add_local_experience()
-                agent.add_global_experience()
+                agent.add_memory(next_state_value, selected_action, rewards[vehicle_index], next_state_value) # không apply action nên không thay đổi trạng thái
+                agent.add_global_memory(next_state_value, selected_action, rewards[vehicle_index], next_state_value)
 
                 continue
 
@@ -401,9 +408,9 @@ class Environment(gym.Env):
         # Tính phần thưởng cho từng phương tiện ---
         total_reward = 0
         for vehicle_index, vehicle in enumerate(self.__vehicles):
-            vehicle_reward = vehicle.get_vehicle_profit()
-            total_reward += vehicle_reward
-            rewards[vehicle_index] += [vehicle_reward]
+            vehicle_reward = [vehicle.get_vehicle_profit()]
+            total_reward += vehicle_reward[0]
+            rewards[vehicle_index] += vehicle_reward
 
         # --- 4️⃣ Kiểm tra điều kiện kết thúc tập ---
         is_done = (
