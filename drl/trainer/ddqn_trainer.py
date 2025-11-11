@@ -91,7 +91,7 @@ class DDQNTrainer:
             rewards (dict): Reward nhận được cho từng agent.
             done_flags (bool): True nếu episode kết thúc.
             truncated_flags (bool): True nếu episode bị truncated.
-            env_info (Any): Thông tin môi trường bổ sung.
+            done_process_info (Any): Thông tin xử lý nhiệm vụ của từng vehicle.
             action_mapping (dict): Mapping các action được thực hiện.
         """
 
@@ -103,7 +103,7 @@ class DDQNTrainer:
         rewards = env_step_info[1]
         done_flags = env_step_info[2]
         truncated_flags = env_step_info[3]
-        env_info = env_step_info[4]
+        done_process_info = env_step_info[4]
         action_mapping = env_step_info[5]
 
         return (
@@ -111,7 +111,7 @@ class DDQNTrainer:
             rewards,
             done_flags,
             truncated_flags,
-            env_info,
+            done_process_info,
             action_mapping,
         )
 
@@ -307,6 +307,7 @@ class DDQNTrainer:
 
         # Tính reward bổ sung dựa trên mission hoàn thành và các yếu tố
         for step_idx, step_info in enumerate(modify_data["modified_infor"]):
+            print('step_idx', step_idx, ', step_info', step_info)
             for entry in step_info:
                 if entry is None:
                     continue
@@ -418,7 +419,7 @@ class DDQNTrainer:
         action_history = []
 
         for t in range(self.max_episode_length):
-            print(f"Timestep {t}/{self.max_episode_length}")
+            print(f"Current_step {t}/{self.max_episode_length}")
             self.current_step += 1
 
             processed_states, actions, actions_save, log_probs = [], [], [], []
@@ -441,7 +442,7 @@ class DDQNTrainer:
                 action_history.append(int(np.argmax(action[1])))
 
             # Step environment
-            next_states, rewards, dones, truncated, modified_info, actions = self.step_env(actions, states)
+            next_states, rewards, dones, truncated, modified_info, actions = self.execute_environment_step(actions, states)
             dones = [dones] * len(states)
 
             # Store info for reward adjustment
@@ -454,7 +455,7 @@ class DDQNTrainer:
             modify_data['dones'].append(dones)
 
             # Train agents if update frequency is reached
-            if self.agents[0].train_start < self.current_step > self.start_train \
+            if self.agents[0].train_start < self.current_step > self.start_train_step \
                 and self.current_step % self.env.env_data['max_missions_per_vehicle'] == 0:
                 threads = []
                 for idx, agent in enumerate(self.agents):
@@ -592,7 +593,7 @@ class DDQNTrainer:
                     self.agents[agent_idx].add_experience(mem[0][i], mem[1][i], mem[2][i], mem[3][i])
 
         # Train agents if conditions met
-        if self.agents[0].train_start < self.current_step > self.start_train:
+        if self.agents[0].train_start < self.current_step > self.start_train_step:
             threads = []
             for idx, agent in enumerate(self.agents):
                 if not self.thread:

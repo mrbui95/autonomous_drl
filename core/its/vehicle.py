@@ -380,7 +380,7 @@ class Vehicle(Observer):
         """
 
         if len(self.__ready_missions) == 0 or not self.__on_time:
-            return True
+            return
 
         # Lấy nhiệm vụ đầu tiên trong danh sách sẵn sàng
         current_mission = self.__ready_missions.pop(0)

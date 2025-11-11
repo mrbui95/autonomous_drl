@@ -113,7 +113,6 @@ class DDQNAgent(nn.Module):
 
     def forward(self, state_tensor):
         """Forward pass qua mạng Q."""
-        print('shape', state_tensor.shape)
         q_values = self.model(state_tensor)
         # Nếu muốn dùng Softmax cho action probabilities, bỏ comment dòng dưới
         # q_values = self.softmax(q_values)

@@ -64,7 +64,7 @@ class Environment(gym.Env):
             -np.inf, np.inf, shape=(env_data["total_missions"],), dtype="float32"
         )
         self.observation_space = Box(
-            -np.inf, np.inf, shape=(14604, 1), dtype="float32"
+            -np.inf, np.inf, shape=(6816, 1), dtype="float32"
         )  # chiều có thể thay đổi tùy data
 
         # Bộ nhớ action và giải pháp
@@ -436,7 +436,7 @@ class Environment(gym.Env):
         segment_info = np.array(
             [
                 [segment.get_distance(), segment.get_status()]
-                for segment in self.data["segments"]
+                for segment in self.env_data["segments"]
             ],
             dtype=np.float32,
         )
@@ -446,7 +446,7 @@ class Environment(gym.Env):
 
         # Quan hệ phụ thuộc giữa các mission, tối đa 10 depends
         mission_depends_array = np.zeros(
-            (self.data["total_missions"], 10), dtype=np.float32
+            (self.env_data["total_missions"], 10), dtype=np.float32
         )
         for idx, mission in enumerate(self.missions):
             depends = [d for d in mission.get_dependencies() if d not in depend_index]
@@ -463,7 +463,7 @@ class Environment(gym.Env):
 
         # Quan hệ mission mà mỗi vehicle đang giữ
         vehicle_missions_depends_array = np.zeros(
-            (self.data["num_vehicles"], self.data["max_missions_per_vehicle"], 10),
+            (self.env_data["num_vehicles"], self.env_data["max_missions_per_vehicle"], 10),
             dtype=np.float32,
         )
         for v_idx, vehicle in enumerate(self.vehicles):
@@ -475,7 +475,7 @@ class Environment(gym.Env):
                     v_idx, m_idx, : len(mission.get_dependencies())
                 ] = mission.get_dependencies()
         vehicle_missions_depends_array = (
-            vehicle_missions_depends_array.flatten() / self.data["total_missions"]
+            vehicle_missions_depends_array.flatten() / self.env_data["total_missions"]
         )
 
         # --- Tạo observation cho từng vehicle ---
@@ -506,7 +506,7 @@ class Environment(gym.Env):
             mission_lengths_flat = mission_lengths.flatten() / (5000 * np.sqrt(2))
             vehicle_positions_flat = vehicle_positions.flatten() / 5000
             mission_depends_flat = (
-                mission_depends_array.flatten() / self.data["total_missions"]
+                mission_depends_array.flatten() / self.env_data["total_missions"]
             )
 
             # Định nghĩa index dict (cho các phần của observation)
@@ -583,7 +583,7 @@ class Environment(gym.Env):
         """
         # --- Chuẩn bị thông tin segment và mission ---
         segment_info = np.array(
-            [[segment.get_distance(), segment.get_status()] for segment in self.data["segments"]],
+            [[segment.get_distance(), segment.get_status()] for segment in self.env_data["segments"]],
             dtype=np.float32,
         )
         mission_lengths = np.array(
@@ -592,7 +592,7 @@ class Environment(gym.Env):
 
         # Mảng phụ thuộc các mission, tối đa 10 depends
         num_missions_depends_array = np.zeros(
-            (self.data["total_missions"], 10), dtype=np.float32
+            (self.env_data["total_missions"], 10), dtype=np.float32
         )
         for idx, mission in enumerate(self.missions):
             depends = mission.get_dependencies()
@@ -603,7 +603,7 @@ class Environment(gym.Env):
 
         # Mảng phụ thuộc các mission mà vehicle đang giữ
         vehicle_missions_depends_array = np.zeros(
-            (self.data["num_vehicles"], self.data["max_missions_per_vehicle"], 10),
+            (self.env_data["num_vehicles"], self.env_data["max_missions_per_vehicle"], 10),
             dtype=np.float32,
         )
         for v_idx, vehicle in enumerate(self.vehicles):
@@ -732,7 +732,7 @@ class Environment(gym.Env):
         for idx, v_id in enumerate(actions_dict):
             # Nếu tất cả nhiệm vụ đã được chọn
             if (self.action_memory == 1).all():
-                for v in range(self.data["num_vehicles"]):
+                for v in range(self.env_data["num_vehicles"]):
                     if v not in action_taken:
                         action_taken[v] = -1
                 break
@@ -748,7 +748,7 @@ class Environment(gym.Env):
             if agents is not None:
                 agent = agents[idx]
                 if (agent.epsilon > self.rng.random()):
-                    action = self.rng.integers(0, agent.action_size)
+                    action = self.rng.integers(0, agent.action_dim)
                 else:
                     action = int(np.argmax(v_action))
             else:
@@ -854,7 +854,7 @@ class Environment(gym.Env):
         """
         total_completed_tasks = 0
         total_profit = 0
-        rewards = [0] * self.data["num_vehicles"]
+        rewards = [0] * self.env_data["num_vehicles"]
 
         # Gán nhiệm vụ cho tất cả vehicle
         for vehicle in self.vehicles:
