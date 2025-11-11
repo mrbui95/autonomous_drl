@@ -92,11 +92,8 @@ def create_trainer(
     # Đảm bảo thư mục lưu trữ tồn tại
     os.makedirs(save_directory, exist_ok=True)
 
-    # Xác định loại trainer cần khởi tạo
-    trainer_class = DDQNTrainer
-
     # Khởi tạo trainer với các tham số cấu hình
-    trainer = trainer_class(
+    trainer = DDQNTrainer(
         env=environment,
         agents=agent_list,
         score_window_size=score_window_size,
@@ -104,13 +101,13 @@ def create_trainer(
         update_frequency=update_interval,
         save_dir=save_directory,
         use_thread=use_thread,
-        use_detach_thread=detach_thread,
+        detach_thread=detach_thread,
         train_start_factor=2,
     )
 
     # Khởi tạo bộ đếm
-    trainer.set_time_step(0)
-    trainer.set_episode_count(0)
+    trainer.current_step = 0
+    trainer.current_episode = 0
 
     return trainer
 
@@ -131,15 +128,15 @@ def train_agents(
 
     for episode_idx in range(1, max_episodes + 1):
         # Thực hiện 1 bước huấn luyện (episode)
-        trainer.step_multi_action()
+        trainer.run_episode_step()
 
         # In trạng thái huấn luyện định kỳ
         if episode_idx % 100 == 0:
             trainer.print_status()
 
         # Tính điểm trung bình của các episode gần nhất
-        print(trainer.get_score_history(), trainer.get_score_history().shape)
-        recent_scores = np.array(trainer.get_score_history()[:,-score_window:])
+        print(trainer.score_history, trainer.score_history.shape)
+        recent_scores = np.array(trainer.score_history[:,-score_window:])
         mean_reward = np.max(recent_scores, axis=1).mean()
         print(
             f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
@@ -147,19 +144,19 @@ def train_agents(
 
         # Lưu model và plot định kỳ
         if episode_idx % 1000 == 0:
-            trainer.save()
+            trainer.save_models()
             trainer.print_status()
-            trainer.plot()
+            trainer.df_scores()
         elif episode_idx % score_window == 0:
             trainer.print_status()
-            trainer.plot()
+            trainer.df_scores()
 
         # Dừng huấn luyện nếu đạt target_score hoặc hết max_episodes
         if mean_reward >= target_score or episode_idx == max_episodes:
             print("Môi trường đã được giải quyết hoặc đạt max episode.")
-            trainer.save()
+            trainer.save_models()
             trainer.print_status()
-            trainer.plot()
+            trainer.df_scores()
             env.close()
             break
 
@@ -197,18 +194,20 @@ def run_ddqn_training(**kwargs):
     register_env(
         "env",
         lambda config: Environment(
-            data=config, verbose=verbose, map_obj=map_info, task_generator=task_gen
+            env_data=config, verbose=verbose, map_obj=map_info, task_generator=task_gen
         ),
     )
 
     env = Environment(
-        data=env_config, verbose=verbose, map_obj=map_info, task_generator=task_gen
+        env_data=env_config, verbose=verbose, map_obj=map_info, task_generator=task_gen
     )
 
     # --- 5. Extract environment dimensions ---
     num_agents = env_config["num_vehicles"]
-    state_dim = np.prod(env.get_observation_space().shape)
-    action_dim = env.get_action_space().shape[0]
+    state_dim = np.prod(env.observation_space.shape)
+    action_dim = env.action_space.shape[0]
+
+    print('======num_agents: ', num_agents, ', state_dim:', state_dim, ', action_dim: ', action_dim)
 
     # --- 6. Initialize DDQN agents ---
     agents = []

@@ -53,8 +53,8 @@ class Environment(gym.Env):
         self.rng = np.random.default_rng(SEED)
 
         # Khởi tạo vehicles và missions
-        self.vehicles = self.init_vehicles()
-        self.missions = self.init_missions()
+        self.vehicles = self.initialize_vehicles()
+        self.missions = self.initialize_missions()
 
         # Agent IDs
         self.agent_ids = {f"vehicle_{i}" for i in range(self.env_data["num_vehicles"])}
@@ -75,6 +75,9 @@ class Environment(gym.Env):
         self.max_selection_turn = [env_data["max_missions_per_vehicle"]] * env_data[
             "num_vehicles"
         ]
+
+        # Giá trị phần thưởng trung bình lý tưởng cho mỗi phương tiện
+        self.ideal_avg_reward = get_ideal_expected_reward()
 
     # init_missions
     def initialize_missions(self):
@@ -138,14 +141,14 @@ class Environment(gym.Env):
             vehicle = Vehicle(
                 cpu_freq=0.5,
                 current_position=start_point,
-                road_map=self.map_ref,
+                road_map=self.map_obj,
                 verbose=self.verbose,
                 tau=self.env_data["tau"],
             )
             vehicles_list.append(vehicle)
 
         # Reset trạng thái vehicle cuối cùng (hoặc có thể dùng reset cho tất cả nếu cần)
-        vehicles_list[-1].reset()
+        Vehicle.reset_vehicle_id_counter()
 
         return vehicles_list
 
@@ -891,7 +894,7 @@ class Environment(gym.Env):
         done = (
             self.current_step >= self.max_steps
             or not intime
-            or sum(rewards) > avg_reward
+            or sum(rewards) > self.ideal_avg_reward
         )
         truncated = False
         infos = {}  # Thông tin bổ sung (trống)

@@ -60,7 +60,7 @@ class DDQNAgent(nn.Module):
         self.loss_fn = nn.MSELoss()  # Loss function
         self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr)  # Optimizer
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            self.optimizer, mode="min", factor=0.1, patience=5, verbose=True
+            self.optimizer, mode="min", factor=0.1, patience=5
         )
 
         # --- Path và seed ---
@@ -113,6 +113,7 @@ class DDQNAgent(nn.Module):
 
     def forward(self, state_tensor):
         """Forward pass qua mạng Q."""
+        print('shape', state_tensor.shape)
         q_values = self.model(state_tensor)
         # Nếu muốn dùng Softmax cho action probabilities, bỏ comment dòng dưới
         # q_values = self.softmax(q_values)

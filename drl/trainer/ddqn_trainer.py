@@ -2,8 +2,12 @@ import os
 import numpy as np
 import torch
 import threading
+import matplotlib.pyplot as plt
+import pandas as pd
 
 from core.task_generator import TaskGenerator
+from config.config import mission_config
+from config.drl_config import ddqn_config
 
 
 class DDQNTrainer:
@@ -26,7 +30,7 @@ class DDQNTrainer:
             env: Môi trường Multi-Agent.
             agents: Danh sách agent DDQN.
             score_window_size: Cửa sổ để tính reward trung bình.
-            max_episode_length: Số timestep tối đa mỗi episode.
+            max_episode_length: Số step tối đa mỗi episode.
             update_frequency: Số timestep giữa các lần cập nhật target model.
             save_dir: Thư mục lưu checkpoint.
             use_thread: Sử dụng thread để huấn luyện agent không (default=True).
@@ -71,7 +75,7 @@ class DDQNTrainer:
         self.eta = 0  # dùng để tính reward tối ưu hóa
 
         # Task generator cho môi trường
-        self.task_generator = TaskGenerator(15, env.lmap)
+        self.task_generator = TaskGenerator(15, env.map_obj)
 
     # step_env
     def execute_environment_step(self, actions, current_states):
@@ -92,7 +96,7 @@ class DDQNTrainer:
         """
 
         # Thực hiện action trong môi trường và nhận thông tin trả về
-        env_step_info = self.env.step(actions, self.agents, current_states)
+        env_step_info = self.env.step_env(actions, self.agents, current_states)
 
         # Trích xuất thông tin quan trọng từ môi trường
         next_states = env_step_info[0]
@@ -111,6 +115,7 @@ class DDQNTrainer:
             action_mapping,
         )
 
+    # step_env_ma
     def execute_multi_action_step(self, actions):
         """
         Thực hiện các action trong môi trường đa-action (multi-action) và
@@ -128,7 +133,7 @@ class DDQNTrainer:
         """
 
         # Thực hiện multi-action trong môi trường
-        env_step_info = self.env.step_ma(actions)
+        env_step_info = self.env.step_multi_agent(actions)
 
         # Trích xuất thông tin quan trọng từ môi trường
         next_states = env_step_info[0]
@@ -159,6 +164,7 @@ class DDQNTrainer:
 
         return np.sqrt(sum_squared_diffs)
 
+    # run_episode
     def run_single_episode(self):
         """
         Chạy một episode đầy đủ trong môi trường.
@@ -166,21 +172,21 @@ class DDQNTrainer:
         Returns:
             scores (list): Danh sách reward theo từng agent trong episode.
         """
-        n_agents = self.env.data["n_vehicles"]
+        n_agents = self.env.env_data["num_vehicles"]
 
         # Khởi tạo scores cho từng agent
         scores = [[] for _ in range(n_agents)]
 
         # Reset môi trường và lấy trạng thái ban đầu
-        env_info = self.env.reset()
+        env_info = self.env.reset_environment()
         current_states = env_info[0]
 
         # Lưu các action đã thực hiện để tránh trùng
         executed_actions = []
 
         for t in range(self.max_episode_length):
-            print(f"Timestep {t}/{self.max_episode_length}")
-            self.timestep += 1
+            print(f"current_step {t}/{self.max_episode_length}")
+            self.current_step += 1
 
             # Danh sách trạng thái đã xử lý, action, log_probs
             processed_states, actions, log_probs = [], [], []
@@ -191,7 +197,7 @@ class DDQNTrainer:
                 state_array = np.reshape(current_states[state_key], (1, -1))
                 state_tensor = torch.from_numpy(state_array).float()
 
-                action, log_prob = agent.get_actions(state_tensor, idx)
+                action, log_prob = agent.select_actions(state_tensor, idx)
 
                 # Nếu trạng thái + action đã xuất hiện thì bỏ qua
                 if (
@@ -207,7 +213,7 @@ class DDQNTrainer:
 
             # Thực hiện action trong môi trường và nhận phản hồi
             next_states, rewards, done_flags, truncated, _, actions_dict = (
-                self.step_env(actions, current_states)
+                self.execute_environment_step(actions, current_states)
             )
             done_flags = [done_flags] * len(current_states)
 
@@ -233,7 +239,7 @@ class DDQNTrainer:
                 action_val = actions_dict[action_tensor]
                 state_tensor = state_tensor.view(-1)
                 next_state_tensor = next_states[next_state_key]
-                agent.add_memory(
+                agent.add_experience(
                     state_tensor, action_val, rewards[reward], next_state_tensor
                 )
 
@@ -241,9 +247,9 @@ class DDQNTrainer:
 
             # Huấn luyện agent nếu đủ điều kiện
             if (
-                self.agents[0].train_start < self.timestep
-                and self.timestep > self.start_train
-                and self.timestep % self.env.data["n_miss_per_vec"] == 0
+                self.agents[0].train_start < self.current_step
+                and self.current_step > self.train_start
+                and self.current_step % self.env.env_data["max_missions_per_vehicle"] == 0
             ):
 
                 threads = []
@@ -263,7 +269,7 @@ class DDQNTrainer:
                         thread.join()
 
             # Cập nhật target model định kỳ
-            if self.timestep % 1000 == 0:
+            if self.current_step % 1000 == 0:
                 for agent in self.agents:
                     agent.update_target_model()
 
@@ -285,11 +291,11 @@ class DDQNTrainer:
 
         Args:
             modify_data (dict): Bao gồm state, action, current_wards, next_state,
-                                modified_infor, dones theo từng timestep.
+                                modified_infor, dones theo từng current_step.
         Returns:
             int: 0 khi hoàn tất.
         """
-        # Xác định timestep nào có thay đổi reward
+        # Xác định current_step nào có thay đổi reward
         reward_changed_flags = [0] * len(modify_data["state"])
         completed_count = 0
 
@@ -314,13 +320,13 @@ class DDQNTrainer:
                     ):
                         # Tính reward bổ sung
                         additional_reward = (
-                            (vehicle_id + 1) / mission_cfg["n_vehicle"]
+                            (vehicle_id + 1) / mission_config["num_vehicles"]
                         ) * (
-                            (mission_cfg["n_miss_per_vec"] - agent_idx)
+                            (mission_config["max_missions_per_vehicle"] - agent_idx)
                             * n_remove_depends
                             * 50
                             - n_waiting * 50
-                        ) + completed_count * mission_cfg[
+                        ) + completed_count * mission_config[
                             "n_mission"
                         ]
                         print(
@@ -355,14 +361,14 @@ class DDQNTrainer:
 
                 if reward_changed_flags[step_idx] and action_val != -1:
                     # Thêm vào cả global memory và local memory
-                    self.agents[agent_idx].add_global_memory(
+                    self.agents[agent_idx].add_global_experience(
                         state_dict[vehicle_key],
                         action_val,
                         current_reward,
                         next_state,
                         done_flag,
                     )
-                    self.agents[agent_idx].add_memory(
+                    self.agents[agent_idx].add_experience(
                         state_dict[vehicle_key],
                         action_val,
                         current_reward,
@@ -371,14 +377,14 @@ class DDQNTrainer:
                     )
                 elif action_val != -1:
                     # Nếu không thay đổi reward, vẫn thêm -100
-                    self.agents[agent_idx].add_memory(
+                    self.agents[agent_idx].add_experience(
                         state_dict[vehicle_key],
                         action_val,
                         [-100],
                         next_state,
                         done_flag,
                     )
-                    self.agents[agent_idx].add_global_memory(
+                    self.agents[agent_idx].add_global_experience(
                         state_dict[vehicle_key],
                         action_val,
                         [-100],
@@ -397,10 +403,10 @@ class DDQNTrainer:
             scores (list): List of rewards gained by each agent per timestep.
         """
         # Initialize reward scores for each agent
-        scores = [[] for _ in range(self.env.data['n_vehicles'])]
+        scores = [[] for _ in range(self.env.env_data['num_vehicles'])]
 
         # Reset environment and get initial states
-        env_info = self.env.reset()
+        env_info = self.env.reset_environment()
         states = env_info[0]
 
         # Store information for reward modification
@@ -413,7 +419,7 @@ class DDQNTrainer:
 
         for t in range(self.max_episode_length):
             print(f"Timestep {t}/{self.max_episode_length}")
-            self.timestep += 1
+            self.current_step += 1
 
             processed_states, actions, actions_save, log_probs = [], [], [], []
 
@@ -421,7 +427,7 @@ class DDQNTrainer:
             for agent_idx, state_key in enumerate(states):
                 agent = self.agents[agent_idx]
                 obs = torch.from_numpy(np.reshape(states[state_key], (1, -1))).float()
-                action, log_prob = agent.get_actions(obs, agent_idx)
+                action, log_prob = agent.select_actions(obs, agent_idx)
 
                 # Avoid duplicate states and actions
                 if any(torch.equal(obs, ps) for ps in processed_states) \
@@ -448,8 +454,8 @@ class DDQNTrainer:
             modify_data['dones'].append(dones)
 
             # Train agents if update frequency is reached
-            if self.agents[0].train_start < self.timestep > self.start_train \
-                and self.timestep % self.env.data['n_miss_per_vec'] == 0:
+            if self.agents[0].train_start < self.current_step > self.start_train \
+                and self.current_step % self.env.env_data['max_missions_per_vehicle'] == 0:
                 threads = []
                 for idx, agent in enumerate(self.agents):
                     if not self.thread:
@@ -467,7 +473,7 @@ class DDQNTrainer:
                         thread.join()
 
             # Update target networks periodically
-            if self.timestep > 0 and self.timestep % 1000 == 0:
+            if self.current_step > 0 and self.current_step % 1000 == 0:
                 for agent in self.agents:
                     agent.update_target_model()
 
@@ -496,21 +502,21 @@ class DDQNTrainer:
         Returns:
             rewards (list): Rewards for each agent at the end of the episode.
         """
-        n_missions_per_agent = self.env.data['n_miss_per_vec']
-        n_agents = self.env.data['n_vehicles']
+        total_missions_per_agent = self.env.env_data['max_missions_per_vehicle']
+        n_agents = self.env.env_data['num_vehicles']
 
         # Initialize reward storage and counters
         scores = [[] for _ in range(n_agents)]
-        remaining_selections = np.array([n_missions_per_agent] * n_agents)
+        remaining_selections = np.array([total_missions_per_agent] * n_agents)
         action_order = [0] * n_agents
         agent_memory = {i: [[], [], [], [], []] for i in range(n_agents)}  # state, action, reward, next_state, order
 
         # Reset environment and get initial states
-        env_info = self.env.reset()
+        env_info = self.env.reset_environment()
         states = env_info[0]
 
         # Track actions assigned
-        assigned_actions = [0] * self.env.data['n_missions']
+        assigned_actions = [0] * self.env.env_data['total_missions']
         first_queue_list = []
         iteration = 0
         max_free_select = 5
@@ -523,10 +529,10 @@ class DDQNTrainer:
                 if remaining_selections[agent_idx] <= 0:
                     continue
 
-                action, log_prob = agent.get_actions(obs, agent_idx)
+                action, log_prob = agent.select_actions(obs, agent_idx)
                 # epsilon-greedy selection
-                if agent.epsilon > self.env.generator.random() or iteration > max_free_select:
-                    action = self.env.generator.integers(0, agent.action_size)
+                if agent.epsilon > self.env.rng.random() or iteration > max_free_select:
+                    action = self.env.rng.integers(0, agent.action_size)
                 else:
                     action = int(np.argmax(action[1]))
 
@@ -548,11 +554,11 @@ class DDQNTrainer:
                     continue
 
                 self.env.action_memory[action] = 1
-                is_first_queue = len(self.env.missions[action].get_depends()) == 0
+                is_first_queue = len(self.env.missions[action].get_dependencies()) == 0
                 if is_first_queue:
                     first_queue_list.append(action)
 
-                next_state = self.env.get_ma_observations(first_queue_list, move_vehicle_pos=is_first_queue)
+                next_state = self.env.get_multi_agent_observations(first_queue_list, move_vehicle_pos=is_first_queue)
                 mem[2].append(0)
                 mem[3][-1] = torch.from_numpy(np.reshape(next_state[state_key], (1, -1))).float()
                 mem[4].append(action_order[agent_idx])
@@ -561,32 +567,32 @@ class DDQNTrainer:
                 remaining_selections[agent_idx] -= 1
 
             iteration += 1
-            states = self.env.get_ma_observations(first_queue_list)
+            states = self.env.get_multi_agent_observations(first_queue_list)
 
         # Remove empty placeholders
         assigned_actions = [a for a in assigned_actions if a != 0]
 
         # Step environment for all actions
-        _, rewards, dones, truncated, _ = self.step_env_ma(assigned_actions)
+        _, rewards, dones, truncated, _ = self.execute_multi_action_step(assigned_actions)
         dones = [dones] * n_agents
 
         # Add experiences to agent memories
         for agent_idx, mem in agent_memory.items():
             reward = rewards[agent_idx]
-            reduce_factor = reward / n_missions_per_agent
-            if reward / (n_missions_per_agent * 100) > 1.0:
+            reduce_factor = reward / total_missions_per_agent
+            if reward / (total_missions_per_agent * 100) > 1.0:
                 reduce_factor = 0
 
             for i in range(len(mem[0])):
                 if mem[2][i] == 0 and mem[4][i] != -1:
-                    self.agents[agent_idx].add_memory(mem[0][i], mem[1][i],
+                    self.agents[agent_idx].add_experience(mem[0][i], mem[1][i],
                                                     reward + mem[2][i] - mem[4][i] * reduce_factor,
                                                     mem[3][i])
                 else:
-                    self.agents[agent_idx].add_memory(mem[0][i], mem[1][i], mem[2][i], mem[3][i])
+                    self.agents[agent_idx].add_experience(mem[0][i], mem[1][i], mem[2][i], mem[3][i])
 
         # Train agents if conditions met
-        if self.agents[0].train_start < self.timestep > self.start_train:
+        if self.agents[0].train_start < self.current_step > self.start_train:
             threads = []
             for idx, agent in enumerate(self.agents):
                 if not self.thread:
@@ -604,12 +610,12 @@ class DDQNTrainer:
                     thread.join()
 
         # Periodically update target networks
-        if self.timestep > 0 and self.timestep % 5000 == 0:
+        if self.current_step > 0 and self.current_step % 5000 == 0:
             for agent in self.agents:
                 agent.update_target_model()
 
         rewards = np.expand_dims(np.array(rewards), 1).tolist()
-        self.timestep += 1
+        self.current_step += 1
         return rewards
 
     # step
@@ -626,13 +632,13 @@ class DDQNTrainer:
             - self.episode_length_history: độ dài của từng episode
         """
         # Tăng bộ đếm episode
-        self.i_episode += 1
+        self.current_episode += 1
 
         # Chạy episode dựa trên thiết lập modify_reward
-        if ddqn_cfg['modify_reward']:
-            rewards_per_timestep = self.run_episode_modify_reward()
+        if ddqn_config['modify_reward']:
+            rewards_per_timestep = self.run_episode_with_reward_adjustment()
         else:
-            rewards_per_timestep = self.run_episode()
+            rewards_per_timestep = self.run_single_episode()
             print("Episode chạy mà không điều chỉnh reward")
 
         # Tính tổng reward của từng agent trong episode
@@ -656,10 +662,10 @@ class DDQNTrainer:
             - self.episode_length_history: độ dài của từng episode
         """
         # Tăng bộ đếm episode
-        self.i_episode += 1
+        self.current_episode += 1
 
         # Chạy episode multi-action
-        rewards_per_timestep = self.run_episode_ma()
+        rewards_per_timestep = self.run_multi_action_episode()
 
         # Tính tổng reward của từng agent trong episode
         total_rewards_per_agent = np.sum(rewards_per_timestep, axis=1)
@@ -678,7 +684,7 @@ class DDQNTrainer:
         """
         for agent_idx, agent in enumerate(self.agents):
             # Tạo tên file checkpoint cho agent hiện tại
-            checkpoint_path = f"{self.checkpoints_dir}/agent_{agent_idx}_{self.i_episode}.pth"
+            checkpoint_path = f"{self.checkpoints_dir}/agent_{agent_idx}_{self.current_episode}.pth"
             
             # Lưu mô hình của agent
             agent.save_model(checkpoint_path)
@@ -717,7 +723,7 @@ class DDQNTrainer:
 
         # In trạng thái hiện tại ra terminal
         print(
-            f'\033[1mEpisode {self.i_episode} - '
+            f'\033[1mEpisode {self.current_episode} - '
             f'Mean Max Reward: {mean_max_reward:.2f}\033[0m'
             f'\n\t{agent_info_str}\n\t'
             f'Mean Total Reward: {mean_reward_agent.sum():.2f}, '

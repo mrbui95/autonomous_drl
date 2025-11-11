@@ -4,7 +4,9 @@ matplotlib
 networkx
 numpy
 osmnx
+pandas
 pydantic
 ray
 ray[tune]
+requests
 torch

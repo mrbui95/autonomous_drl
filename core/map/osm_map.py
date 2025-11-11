@@ -75,7 +75,8 @@ class RealMap:
             node_size=10,
             edge_linewidth=0.5,
             bgcolor="lightgray",
-            edge_color="black"
+            edge_color="black",
+            show=False
         )
         node_positions = {node: (data['x'], data['y']) for node, data in self.G.nodes(data=True)}
         nx.draw_networkx_nodes(

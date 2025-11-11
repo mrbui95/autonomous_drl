@@ -334,7 +334,7 @@ class Map:
             # Đặt màu cho tất cả các cạnh
             edge_colors = ["blue" for _ in G.edges()]
 
-            ox.plot_graph(G, edge_color=edge_colors, edge_linewidth=2, node_size=0)
+            ox.plot_graph(G, edge_color=edge_colors, edge_linewidth=2, node_size=0, show=False)
             plt.savefig("./data/map.png", dpi=300)
             plt.close()
 
