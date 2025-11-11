@@ -22,274 +22,266 @@ else:
 
 
 class DDQNAgent(nn.Module):
-    global_memory = deque(maxlen=ddqn_config['maxlen_mem'])
+    # Global memory dùng chung cho tất cả instance của DDQNAgent
+    global_memory = deque(maxlen=ddqn_config["maxlen_mem"])
 
-    def __init__(self, state_size, action_size, checkpoint_path="./", load_model=False):
+    def __init__(self, state_dim, action_dim, model_path="./", load_pretrained=False):
         """
-        Khởi tạo một agent DDQN (Deep Double Q-Network) dùng cho Reinforcement Learning.
+        Khởi tạo một agent Double DQN.
 
-        Thuộc tính:
-            state_size (int): Kích thước vector trạng thái quan sát.
-            action_size (int): Số lượng hành động có thể thực hiện.
-            checkpoint_path (str): Đường dẫn lưu hoặc load mô hình.
-            load_model (bool): Nếu True, tải mô hình đã lưu và đặt epsilon = 0.
-
-        Các thuộc tính chính được thiết lập:
-            state_size (int): Lưu state_size.
-            action_size (int): Lưu action_size.
-            discount_factor (float): Hệ số chiết khấu gamma.
-            learning_rate (float): Tốc độ học của mạng neural.
-            epsilon (float): Giá trị epsilon cho epsilon-greedy.
-            epsilon_decay (float): Tốc độ giảm epsilon theo thời gian.
-            epsilon_min (float): Giá trị epsilon tối thiểu.
-            batch_size (int): Kích thước batch để huấn luyện.
-            train_start (int): Số lượng kinh nghiệm tối thiểu trước khi huấn luyện.
-            memory (deque): Bộ nhớ replay riêng của agent.
-            global_memory (deque): Bộ nhớ replay dùng chung cho tất cả agent.
-            model (nn.Module): Mạng Q chính (online network).
-            target_model (nn.Module): Mạng Q mục tiêu (target network).
-            criterion: Hàm mất mát MSE.
-            optimizer: AdamW optimizer.
-            scheduler: ReduceLROnPlateau scheduler cho learning rate.
-            generator: Bộ sinh số ngẫu nhiên.
-            model_file (str): Đường dẫn lưu/trích xuất mô hình.
-            lock: Khóa để đồng bộ thao tác đa luồng.
+        Args:
+            state_dim (int): Kích thước vector trạng thái.
+            action_dim (int): Số lượng action khả thi.
+            model_path (str): Đường dẫn lưu hoặc load model.
+            load_pretrained (bool): Nếu True, sẽ load model đã lưu sẵn.
         """
         super(DDQNAgent, self).__init__()
-        self.__load_model = load_model
 
-        self.__state_size = state_size
-        self.__action_size = action_size
+        # --- Thông số học ---
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        self.discount = ddqn_config["discount_factor"]  # Gamma
+        self.lr = ddqn_config["learning_rate"]  # Learning rate
+        self.epsilon = ddqn_config["epsilon"]  # Khả năng khám phá ban đầu
+        self.epsilon_decay = ddqn_config["epsilon_decay"]  # Hệ số decay epsilon
+        self.epsilon_min = ddqn_config["epsilon_min"]  # Giá trị epsilon tối thiểu
+        self.batch_size = ddqn_config["batch_size"]  # Số mẫu mỗi batch
+        self.train_start = self.batch_size  # Bắt đầu train khi memory đủ batch
 
-        self.__discount_factor = ddqn_config["discount_factor"]
-        self.__learning_rate = ddqn_config["learning_rate"]
-        self.__epsilon = ddqn_config["epsilon"]
-        self.__epsilon_decay = ddqn_config["epsilon_decay"]
-        self.__epsilon_min = ddqn_config["epsilon_min"]
-        self.__batch_size = ddqn_config["batch_size"]
-        self.__train_start = self.__batch_size
+        # --- Memory ---
+        self.memory = deque(maxlen=ddqn_config["maxlen_mem"])  # Memory riêng cho agent
+        self.global_memory = (
+            DDQNAgent.global_memory
+        )  # Memory dùng chung cho tất cả agent
 
-        # Bộ nhớ agent
-        self.__memory = deque(maxlen=ddqn_config["maxlen_mem"])
-        self.__global_memory = DDQNAgent.global_memory
-
-        # Mạng Q
-        self.__model = self.build_model().to(device)
-        self.__target_model = self.build_model().to(device)
-        self.__criterion = nn.MSELoss()
-        self.__optimizer = optim.AdamW(
-            self.__model.parameters(), lr=self.__learning_rate
+        # --- Mạng Q ---
+        self.model = self.build_model().to(device)  # Q-network chính
+        self.target_model = self.build_model().to(device)  # Target Q-network
+        self.loss_fn = nn.MSELoss()  # Loss function
+        self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr)  # Optimizer
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+            self.optimizer, mode="min", factor=0.1, patience=5, verbose=True
         )
-        self.__scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-            self.__optimizer, mode="min", factor=0.1, patience=5
-        )
 
-        # Lưu / load mô hình
-        self.__model_file = checkpoint_path
-        self.__random = np.random.default_rng(SEED_GLOBAL)
+        # --- Path và seed ---
+        self.model_path = model_path
+        self.rng = np.random.default_rng(SEED_GLOBAL)  # Random generator có seed
 
-        if self.__load_model:
-            self.__model.load_state_dict(torch.load(self.__model_file))
-            self.__epsilon = 0
+        # --- Load model nếu có ---
+        if load_pretrained:
+            self.model.load_state_dict(torch.load(self.model_path))
+            self.epsilon = 0  # Nếu load model, không cần khám phá
 
-        # Đồng bộ target_model với model
+        # --- Đồng bộ target network với model chính ---
         self.update_target_model()
 
-        # Khóa để thread-safe
-        self.__lock = Lock()
+        # --- Lock để train đa luồng an toàn ---
+        self.lock = Lock()
 
     def build_model(self):
         """
-        Xây dựng mạng neural cho agent DDQN.
+        Xây dựng mạng neural network cho agent Double DQN.
 
-        Kiến trúc:
-            - Input: vector trạng thái (state_size)
-            - Hidden layers: 3 lớp với số neuron tỉ lệ với state_size
-            - Output: vector Q-value cho mỗi hành động (action_size)
-            - Kích hoạt: SELU cho 2 lớp đầu, ELU cho lớp thứ 3 và output
+        Cấu trúc:
+            Input layer -> Hidden Layer 1 (SELU) -> Hidden Layer 2 (SELU)
+            -> Hidden Layer 3 (ELU) -> Output Layer (ELU)
 
         Returns:
-            nn.Sequential: Mạng neural hoàn chỉnh.
+            model (nn.Sequential): Q-network trả về Q-value cho mỗi action.
         """
-        # Kích thước các lớp ẩn
-        hidden_size_1 = self.__state_size + int(self.__state_size * 0.3)  # 130% state_size
-        hidden_size_2 = int(self.__state_size * 0.6)                   # 60% state_size
-        hidden_size_3 = int(self.__state_size * 0.2)                   # 20% state_size
+        # --- Kích thước các layer ẩn dựa trên state_dim ---
+        hidden_dim1 = self.state_dim + int(self.state_dim * 0.3)  # Layer 1: 130%
+        hidden_dim2 = int(self.state_dim * 0.6)  # Layer 2: 60%
+        hidden_dim3 = int(self.state_dim * 0.2)  # Layer 3: 20%
 
-        # Xây dựng mạng neural
+        # --- Xây dựng model theo nn.Sequential ---
         model = nn.Sequential(
-            nn.Linear(self.__state_size, hidden_size_1),
-            nn.SELU(),
-            nn.Linear(hidden_size_1, hidden_size_2),
-            nn.SELU(),
-            nn.Linear(hidden_size_2, hidden_size_3),
-            nn.ELU(),
-            nn.Linear(hidden_size_3, self.__action_size),
-            nn.ELU()
+            nn.Linear(self.state_dim, hidden_dim1),
+            nn.SELU(),  # Activation SELU cho layer 1
+            nn.Linear(hidden_dim1, hidden_dim2),
+            nn.SELU(),  # Activation SELU cho layer 2
+            nn.Linear(hidden_dim2, hidden_dim3),
+            nn.ELU(),  # Activation ELU cho layer 3
+            nn.Linear(hidden_dim3, self.action_dim),
+            nn.ELU(),  # Output layer ELU, trả về Q-value
         )
 
-        # Softmax dùng khi cần chuyển Q-values sang xác suất
-        self.__softmax = nn.Softmax(dim=1)
+        # --- Lưu Softmax nếu muốn dùng sau ---
+        self.softmax = nn.Softmax(dim=1)
 
         return model
-    
-    def get_train_start(self):
-        """Trả về Số lượng kinh nghiệm tối thiểu trước khi huấn luyện."""
-        return self.__train_start
-    
-    def forward(self, state):
-        """Tính Q-values cho trạng thái đầu vào qua mạng chính."""
-        q_values = self.__model(state)
+
+    def forward(self, state_tensor):
+        """Forward pass qua mạng Q."""
+        q_values = self.model(state_tensor)
+        # Nếu muốn dùng Softmax cho action probabilities, bỏ comment dòng dưới
+        # q_values = self.softmax(q_values)
         return q_values
 
-
-    def save_model(self, file_path):
-        """Lưu trọng số mạng chính vào file chỉ định."""
-        torch.save(self.__model.state_dict(), file_path)
-
+    def save_model(self, name):
+        """Lưu trọng số model vào file."""
+        torch.save(self.model.state_dict(), name)
 
     def update_target_model(self):
-        """Cập nhật trọng số của target network từ mạng chính."""
-        self.__target_model.load_state_dict(self.__model.state_dict())
+        """Cập nhật target network từ model chính."""
+        self.target_model.load_state_dict(self.model.state_dict())
 
-    def get_action(self, state, agent_idx):
-        """Chọn hành động dựa trên epsilon-greedy policy cho agent."""
-        if self.__epsilon > self.__random.random():
-            # Chọn hành động ngẫu nhiên
-            return np.random.randint(0, self.__action_size)
-        else:
-            # Chọn hành động tối ưu từ mạng Q
-            state_tensor = torch.FloatTensor(state).to(device)
-            with torch.no_grad():
-                q_values = self.__model(state_tensor)
-            return torch.argmax(q_values).item()
-        
-    def get_actions(self, state, vehicle_id):
-        """Sinh hành động từ trạng thái hiện tại cho một phương tiện."""
-        state = state.to(device)
+    # get_action
+    def select_action(self, state, agent_id=None):
+        """Chọn action theo epsilon-greedy."""
+        # Khám phá ngẫu nhiên
+        if self.epsilon > self.rng.random():
+            return np.random.randint(0, self.action_dim)
+
+        # Khai thác: chọn action có Q-value lớn nhất
+        state_tensor = torch.FloatTensor(state).to(device)
         with torch.no_grad():
-            actions = self(state)
-        actions = actions.cpu().detach()
-        actions = [vehicle_id, actions]
-        return actions, None
+            q_values = self.model(state_tensor)
+        return torch.argmax(q_values).item()
 
+    # get_actions
+    def select_actions(self, state_tensor, agent_id):
+        """
+        Trả về Q-values cho tất cả action của agent, kèm ID agent.
+        """
+        # Chuyển state lên device
+        state_tensor = state_tensor.to(device)
 
+        # Forward pass để lấy Q-values
+        with torch.no_grad():
+            q_values = self(state_tensor)
 
-    def add_memory(self, state, action, reward, next_state, done=0):
-        """Thêm một trải nghiệm vào bộ nhớ của agent."""
-        if action == -1:  # Bỏ qua hành động không hợp lệ
+        # Chuyển về CPU và detach khỏi graph
+        q_values = q_values.cpu().detach()
+
+        # Trả về danh sách [agent_id, q_values] và None (placeholder)
+        return [agent_id, q_values], None
+
+    # add_memory
+    def add_experience(self, state, action, reward, next_state, done=0):
+        """
+        Thêm experience vào bộ nhớ replay của agent.
+        """
+        # Bỏ qua action không hợp lệ
+        if action == -1:
             return
 
-        # Giữ kích thước bộ nhớ không vượt quá maxlen
-        if len(self.__memory) >= ddqn_config['maxlen_mem']:
-            self.__memory.popleft()
-        
-        # Thêm trải nghiệm vào memory
-        self.__memory.append((state, action, reward, next_state, done))
+        # Nếu memory đầy, loại bỏ experience cũ nhất
+        if len(self.memory) >= ddqn_config["maxlen_mem"]:
+            self.memory.popleft()
 
+        # Thêm experience mới
+        self.memory.append((state, action, reward, next_state, done))
 
-    def add_global_memory(self, state, action, reward, next_state, done=0):
-        """Thêm một trải nghiệm vào bộ nhớ toàn cục của agent."""
-        if action == -1:  # Bỏ qua hành động không hợp lệ
+    # add_global_memory
+    def add_global_experience(self, state, action, reward, next_state, done=0):
+        """
+        Thêm experience vào bộ nhớ toàn cục (global memory) dùng chung cho tất cả agent.
+        """
+        # Bỏ qua action không hợp lệ
+        if action == -1:
             return
 
-        # Giữ kích thước bộ nhớ toàn cục không vượt quá maxlen
-        if len(self.__global_memory) >= ddqn_config['maxlen_mem']:
-            self.__global_memory.popleft()
-        
-        # Thêm trải nghiệm vào global_memory
-        self.__global_memory.append((state, action, reward, next_state, done))
+        # Nếu global memory đầy, loại bỏ experience cũ nhất
+        if len(self.global_memory) >= ddqn_config["maxlen_mem"]:
+            self.global_memory.popleft()
 
+        # Thêm experience mới vào global memory
+        self.global_memory.append((state, action, reward, next_state, done))
 
     def train_model(self):
         """
-        Huấn luyện model DDQN dựa trên mini-batch từ bộ nhớ (memory hoặc global_memory).
+        Huấn luyện Q-network dựa trên mini-batch từ memory.
         """
+        # Nếu đang ở chế độ đánh giá, không train
         if eval:
             return
 
-        # Cập nhật epsilon theo decay
-        if self.__epsilon > self.__epsilon_min:
-            self.__epsilon *= self.__epsilon_decay
-            print(f"self.learning_rate {self.__learning_rate}")
-        print(f"epsilon = {self.__epsilon}")
+        # Cập nhật epsilon decay
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon_decay
+            print(f"Learning rate: {self.lr}")
+        print(f"Epsilon = {self.epsilon}")
 
-        self.__lock.acquire()
+        # Lock để train an toàn khi đa luồng
+        self.lock.acquire()
         try:
-            # Chọn mini-batch từ global_memory hoặc memory
-            if self.__random.random() > 1 - ddqn_config['combine'] and len(self.__global_memory) >= self.batch_size:
-                mini_batch = random.sample(self.__global_memory, self.__batch_size)
+            # Chọn mini-batch từ global memory hoặc local memory
+            if (
+                self.rng.random() > 1 - ddqn_config["combine"]
+                and len(self.global_memory) >= self.batch_size
+            ):
+                mini_batch = random.sample(self.global_memory, self.batch_size)
             else:
-                mini_batch = random.sample(self.__memory, self.__batch_size)
-            
-            # Khởi tạo các tensor cho states, next_states, actions, rewards, dones
-            states = np.zeros((self.__batch_size, self.__state_size))
-            next_states = np.zeros((self.__batch_size, self.__state_size))
+                mini_batch = random.sample(self.memory, self.batch_size)
+
+            # Khởi tạo arrays cho states, next_states
+            states = np.zeros((self.batch_size, self.state_dim))
+            next_states = np.zeros((self.batch_size, self.state_dim))
             actions, rewards, dones = [], [], []
 
-            # Chuẩn hóa dữ liệu từ mini-batch
-            for i in range(self.__batch_size):
+            # Chuẩn bị dữ liệu từ mini-batch
+            for i in range(self.batch_size):
                 states[i] = mini_batch[i][0]
                 actions.append(mini_batch[i][1])
                 rewards.append(mini_batch[i][2])
                 next_states[i] = mini_batch[i][3]
                 dones.append(mini_batch[i][4])
 
-            # Chuyển dữ liệu sang tensor
+            # Chuyển dữ liệu sang tensor trên device
             states = torch.FloatTensor(states).to(device)
             next_states = torch.FloatTensor(next_states).to(device)
             actions = torch.LongTensor(actions).unsqueeze(1).to(device)  # Tensor 2D
-            rewards = torch.FloatTensor(rewards).to(device).reshape([self.__batch_size])
+            rewards = torch.FloatTensor(rewards).to(device).reshape([self.batch_size])
             dones = torch.FloatTensor(dones).to(device)
 
-            # Lấy Q-values từ model chính và target model
-            q_values = self.__model(states)
-            next_q_values = self.__target_model(next_states).detach()
+            # Tính Q-values hiện tại và Q-values target
+            q_values = self.model(states)
+            next_q_values = self.target_model(next_states).detach()
 
-            # Tính Q-target theo công thức DDQN: Q_target = reward + gamma * max(Q_next)
+            # Tính Q-target theo Double DQN
             max_next_q_values = next_q_values.max(dim=1)[0]
-            target_q_values = rewards + (1 - dones) * self.__discount_factor * max_next_q_values
+            target_q_values = rewards + (1 - dones) * self.discount * max_next_q_values
 
-            # Kiểm tra hành động hợp lệ
-            assert actions.max().item() < q_values.shape[1], "actions contains invalid indices!"
-            assert actions.min().item() >= 0, "actions contains negative indices!"
+            # Kiểm tra action hợp lệ
+            assert (
+                actions.max().item() < q_values.shape[1]
+            ), "Action vượt ngoài phạm vi!"
+            assert actions.min().item() >= 0, "Action âm không hợp lệ!"
 
-            # Lấy giá trị Q hiện tại theo hành động đã chọn
+            # Lấy Q-value hiện tại tương ứng với action đã chọn
             current_q_values = q_values.gather(1, actions).squeeze(1)
 
-            # Huấn luyện: tính loss và backprop
-            self.__optimizer.zero_grad()
-            loss = self.__criterion(current_q_values, target_q_values)
+            # Backpropagation
+            self.optimizer.zero_grad()
+            loss = self.loss_fn(current_q_values, target_q_values)
             loss.backward()
-            self.__optimizer.step()
+            self.optimizer.step()
+
         finally:
-            self.__lock.release()
+            self.lock.release()
 
     def quantile_huber_loss(self, y_true, y_pred):
         """
-        Tính Quantile Huber Loss giữa giá trị thực và giá trị dự đoán.
+        Tính Quantile Huber Loss cho distributional RL.
         """
-        # Tạo các quantile từ 0 đến 1 dựa trên số hành động
+        # Xác định các quantile
         quantiles = torch.linspace(
-            1 / (2 * self.__action_size),
-            1 - 1 / (2 * self.__action_size),
-            self.__action_size
+            1 / (2 * self.action_dim), 1 - 1 / (2 * self.action_dim), self.action_dim
         ).to(device)
-        
-        batch_size = y_pred.size(0)
-        
-        # Nhân batch_size lần để so sánh với từng quantile
-        tau = quantiles.repeat(batch_size, 1)
-        
-        # Sai số giữa giá trị thực và giá trị dự đoán
-        error = y_true - y_pred
-        
-        # Huber loss: dùng bình phương nếu nhỏ, tuyến tính nếu lớn
-        huber_loss = torch.where(torch.abs(error) < 0.5, 0.5 * error ** 2, torch.abs(error) - 0.5)
-        
-        # Tính quantile loss: trọng số tau dựa trên dấu của error
-        quantile_loss = torch.abs(tau - (error < 0).float()) * huber_loss
-        
-        # Trả về trung bình loss trên tất cả batch và quantiles
-        return quantile_loss.mean()
 
+        batch_size = y_pred.size(0)
+        tau = quantiles.repeat(batch_size, 1)  # Lặp quantiles cho batch
+
+        # Sai số giữa giá trị thực và dự đoán
+        error = y_true - y_pred
+
+        # Huber loss
+        huber_loss = torch.where(
+            torch.abs(error) < 0.5, 0.5 * error**2, torch.abs(error) - 0.5
+        )
+
+        # Quantile loss
+        quantile_loss = torch.abs(tau - (error < 0).float()) * huber_loss
+
+        return quantile_loss.mean()

@@ -18,9 +18,18 @@ class DataLoader:
     """
 
     # Class attribute: Map cố định dùng chung
-    shared_map = Map(total_roads=map_config['num_roads'], current_traffic_state=map_config['traffic_level'], from_file=map_config['from_file'])
+    shared_map = Map(
+        total_roads=map_config["num_roads"],
+        current_traffic_state=map_config["traffic_level"],
+        from_file=map_config["from_file"],
+    )
 
-    def __init__(self, mission_file='./data/mission_information.json', task_file='./data/task_information.json', graph=None):
+    def __init__(
+        self,
+        mission_file="./data/mission_information.json",
+        task_file="./data/task_information.json",
+        graph=None,
+    ):
         """
         Khởi tạo loader, đọc map, tasks, missions từ file.
 
@@ -42,14 +51,14 @@ class DataLoader:
         self.graph = graph if graph is not None else Graph(self.segments)
 
         # Load offloading tasks từ file task_information.json
-        with open(task_file, 'r') as file:
+        with open(task_file, "r") as file:
             json_task_data = json.load(file, object_hook=self._decode_task)
         self._assign_tasks_to_segments(json_task_data)
 
         # Load mission từ file
         self.read_successful = True
         try:
-            with open(mission_file, 'r') as file:
+            with open(mission_file, "r") as file:
                 json_mission_data = json.load(file, object_hook=self._decode_mission)
                 self.missions_data = json_mission_data
         except Exception as e:
@@ -59,19 +68,19 @@ class DataLoader:
     @staticmethod
     def _decode_task(obj):
         """Chuyển dữ liệu JSON task thành Task objects."""
-        if 'tasks' in obj:
-            obj['tasks'] = [Task(*v) for k, v in obj['tasks'].items()]
+        if "tasks" in obj:
+            obj["tasks"] = [Task(*v) for k, v in obj["tasks"].items()]
         return obj
 
     @staticmethod
     def _decode_mission(obj):
         """Chuyển dữ liệu JSON mission thành Point objects."""
-        if 'start_point' in obj:
-            obj['start_point'] = Point(obj['start_point'][0], obj['start_point'][1])
+        if "start_point" in obj:
+            obj["start_point"] = Point(obj["start_point"][0], obj["start_point"][1])
         else:
             raise ValueError("Wrong file: Mission is missing start_point")
-        if 'end_point' in obj:
-            obj['end_point'] = Point(obj['end_point'][0], obj['end_point'][1])
+        if "end_point" in obj:
+            obj["end_point"] = Point(obj["end_point"][0], obj["end_point"][1])
         else:
             raise ValueError("Wrong file: Mission is missing end_point")
         return obj
@@ -79,10 +88,10 @@ class DataLoader:
     def _assign_tasks_to_segments(self, tasks_data):
         """Gán danh sách task cho từng segment trên map."""
         for item in tasks_data:
-            segment_id = item['segment_id']
+            segment_id = item["segment_id"]
             idx = self.segments.index(segment_id)
             segment = self.segments[idx]
-            segment.set_offloading_tasks(item['tasks'])
+            segment.set_offloading_tasks(item["tasks"])
 
     def get_graph_and_map(self):
         """Trả về graph và map."""
@@ -105,16 +114,16 @@ class DataLoader:
             return False
 
         config = {
-            "n_missions": mission_config['total_missions'],
-            "n_vehicles": mission_config['num_vehicles'],
-            "n_miss_per_vec": mission_config['max_missions_per_vehicle'],
+            "n_missions": mission_config["total_missions"],
+            "n_vehicles": mission_config["num_vehicles"],
+            "n_miss_per_vec": mission_config["max_missions_per_vehicle"],
             "decoded_data": self.missions_data,
             "segments": self.map.get_segments(),
             "graph": self.graph,
-            "thread": other_config['apply_thread'],
-            "detach_thread": other_config['apply_detach'],
-            "score_window_size": other_config['score_window_size'],
-            "tau": other_config['tau']
+            "thread": other_config["apply_thread"],
+            "detach_thread": other_config["apply_detach"],
+            "score_window_size": other_config["score_window_size"],
+            "tau": other_config["tau"],
         }
         print("Finish loading data from file.")
         return config, self.graph, self.map
@@ -129,19 +138,21 @@ class DataLoader:
         Returns:
             dict: config sử dụng trong môi trường mô phỏng
         """
-        missions, graph, map_obj = mission_generator.generate_missions_no_file(mission_config['total_missions'])
+        missions, graph, map_obj = mission_generator.generate_missions_no_file(
+            mission_config["total_missions"]
+        )
         config = {
-            "total_missions": mission_config['total_missions'],
-            "num_vehicles": mission_config['num_vehicles'],
-            "max_missions_per_vehicle": mission_config['max_missions_per_vehicle'],
-            "decoded_data": '',
+            "total_missions": mission_config["total_missions"],
+            "num_vehicles": mission_config["num_vehicles"],
+            "max_missions_per_vehicle": mission_config["max_missions_per_vehicle"],
+            "decoded_data": "",
             "segments": map_obj.get_segments(),
             "graph": graph,
             "missions": missions,
-            "apply_thread": other_config['apply_thread'],
-            "apply_detach": other_config['apply_detach'],
-            "score_window_size": other_config['score_window_size'],
-            "tau": other_config['tau'],
-            "map": map_obj
+            "apply_thread": other_config["apply_thread"],
+            "apply_detach": other_config["apply_detach"],
+            "score_window_size": other_config["score_window_size"],
+            "tau": other_config["tau"],
+            "map": map_obj,
         }
         return config

@@ -5,7 +5,7 @@ import torch
 from core.task_generator import TaskGenerator
 from drl.agents.ddqn_agent import DDQNAgent
 from drl.envs.data_loader import DataLoader
-from drl.envs.enviroment import Environment
+from drl.envs.environment import Environment
 from drl.trainer.ddqn_trainer import DDQNTrainer
 from config.config import DEVICE
 from config.drl_config import ddqn_config
@@ -51,10 +51,10 @@ def create_agent(
 
     # Khởi tạo Agent
     agent = DDQNAgent(
-        state_size=state_dim,
-        action_size=action_dim,
-        checkpoint_path=checkpoint_path,
-        load_model=load_model,
+        state_dim=state_dim,
+        action_dim=action_dim,
+        model_path=checkpoint_path,
+        load_pretrained=load_model,
     )
 
     return agent
@@ -131,13 +131,14 @@ def train_agents(
 
     for episode_idx in range(1, max_episodes + 1):
         # Thực hiện 1 bước huấn luyện (episode)
-        trainer.run_episode()
+        trainer.step_multi_action()
 
         # In trạng thái huấn luyện định kỳ
         if episode_idx % 100 == 0:
             trainer.print_status()
 
         # Tính điểm trung bình của các episode gần nhất
+        print(trainer.get_score_history(), trainer.get_score_history().shape)
         recent_scores = np.array(trainer.get_score_history()[:,-score_window:])
         mean_reward = np.max(recent_scores, axis=1).mean()
         print(
@@ -209,20 +210,13 @@ def run_ddqn_training(**kwargs):
     state_dim = np.prod(env.get_observation_space().shape)
     action_dim = env.get_action_space().shape[0]
 
-    print('-------------------num_agents, state_dim, action_dim-----------------')
-    print(num_agents, state_dim, action_dim)
-
     # --- 6. Initialize DDQN agents ---
     agents = []
     for i in range(num_agents):
         agent = create_agent(
             state_dim, action_dim, agent_idx=i, load_model=False, checkpoint_idx=0
         )
-        print(i, agent)
         agents.append(agent)
-
-    print('-------------------agents-----------------')
-    print(agents)
 
     # --- 7. Prepare save directory ---
     save_dir = os.path.join(
@@ -236,9 +230,6 @@ def run_ddqn_training(**kwargs):
         ),
     )
 
-    print('-------------------save_dir-----------------')
-    print(save_dir)
-
     # --- 8. Create trainer ---
     trainer = create_trainer(
         env,
@@ -251,9 +242,6 @@ def run_ddqn_training(**kwargs):
         trainer_type="DDQNTrainer",
         update_interval=ddqn_config["batch_size"] / 4,
     )
-
-    print('-------------------trainer-----------------')
-    print(trainer)
 
     # --- 9. Train agents ---
     train_agents(env, trainer, score_window=env_config["score_window_size"])
