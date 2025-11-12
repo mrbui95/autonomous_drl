@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import torch
+import logging
 
 from core.task_generator import TaskGenerator
 from drl.agents.ddqn_agent import DDQNAgent
@@ -10,6 +11,12 @@ from drl.trainer.ddqn_trainer import DDQNTrainer
 from config.config import DEVICE
 from config.drl_config import ddqn_config
 from ray.tune.registry import register_env
+
+logging.basicConfig(
+    level=logging.DEBUG,  # có thể đổi thành INFO khi muốn giảm log
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
+)
 
 if DEVICE != "cpu":
     device = torch.device("cuda:" + str(DEVICE) if torch.cuda.is_available() else "cpu")
@@ -136,7 +143,7 @@ def train_agents(
 
         # Tính điểm trung bình của các episode gần nhất
         print(trainer.score_history, trainer.score_history.shape)
-        recent_scores = np.array(trainer.score_history[:,-score_window:])
+        recent_scores = np.array(trainer.score_history[:, -score_window:])
         mean_reward = np.max(recent_scores, axis=1).mean()
         print(
             f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
@@ -207,7 +214,14 @@ def run_ddqn_training(**kwargs):
     state_dim = np.prod(env.observation_space.shape)
     action_dim = env.action_space.shape[0]
 
-    print('======num_agents: ', num_agents, ', state_dim:', state_dim, ', action_dim: ', action_dim)
+    print(
+        "======num_agents: ",
+        num_agents,
+        ", state_dim:",
+        state_dim,
+        ", action_dim: ",
+        action_dim,
+    )
 
     # --- 6. Initialize DDQN agents ---
     agents = []
@@ -237,7 +251,8 @@ def run_ddqn_training(**kwargs):
         use_thread=env_config["apply_thread"],
         detach_thread=env_config["apply_detach"],
         score_window_size=env_config["score_window_size"],
-        max_episode_length=env_config["max_missions_per_vehicle"] * env_config["num_vehicles"],
+        max_episode_length=env_config["max_missions_per_vehicle"]
+        * env_config["num_vehicles"],
         trainer_type="DDQNTrainer",
         update_interval=ddqn_config["batch_size"] / 4,
     )
@@ -245,5 +260,6 @@ def run_ddqn_training(**kwargs):
     # --- 9. Train agents ---
     train_agents(env, trainer, score_window=env_config["score_window_size"])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     run_ddqn_training()

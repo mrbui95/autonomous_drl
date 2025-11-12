@@ -4,6 +4,8 @@ import copy
 import numpy as np
 import gymnasium as gym
 import time
+import logging
+
 from math import sqrt
 from gymnasium.spaces import Box
 from ray.tune.registry import register_env
@@ -13,7 +15,6 @@ from core.its.vehicle import Vehicle
 from core.task_generator import TaskGenerator
 from drl.envs.data_loader import DataLoader
 from drl.envs.utils import get_ideal_expected_reward
-import torch
 
 SEED = SEED_GLOBAL
 
@@ -721,6 +722,9 @@ class Environment(gym.Env):
             done_process_info (list): Thông tin xử lý nhiệm vụ của từng vehicle.
             action_taken (dict): Hành động thực sự được thực hiện cho từng vehicle.
         """
+        logging.debug("=== Bắt đầu step_env ===")
+        logging.debug(f"Số lượng vehicle/action: {len(actions_dict)}")
+
         rewards = {}
         total_completed_tasks = 0
         total_system_profit = 0
@@ -730,8 +734,11 @@ class Environment(gym.Env):
 
         # Xử lý hành động của từng vehicle
         for idx, v_id in enumerate(actions_dict):
+            logging.debug(f"[ACTION] Vehicle {idx}, hành động raw: {actions_dict[idx]}")
+
             # Nếu tất cả nhiệm vụ đã được chọn
             if (self.action_memory == 1).all():
+                logging.info("Tất cả nhiệm vụ đã được chọn. Đánh dấu action -1 cho vehicle còn lại.")
                 for v in range(self.env_data["num_vehicles"]):
                     if v not in action_taken:
                         action_taken[v] = -1
@@ -739,6 +746,7 @@ class Environment(gym.Env):
 
             # Kiểm tra lượt chọn còn lại
             elif self.max_selection_turn[idx] < 1:
+                logging.debug(f"Vehicle {idx} đã hết lượt chọn, đánh dấu action -1.")
                 action_taken[idx] = -1
                 continue
 
@@ -749,9 +757,12 @@ class Environment(gym.Env):
                 agent = agents[idx]
                 if (agent.epsilon > self.rng.random()):
                     action = self.rng.integers(0, agent.action_dim)
+                    logging.debug(f"Vehicle {idx} chọn action ngẫu nhiên: {action}")
                 else:
                     action = int(np.argmax(v_action))
+                    logging.debug(f"Vehicle {idx} chọn action greedy: {action}")
             else:
+                logging.error("Agents không được cung cấp.")
                 raise ValueError("Agents không được cung cấp.")
 
             # Nếu hành động đã được chọn trước đó
@@ -772,6 +783,7 @@ class Environment(gym.Env):
                 )
                 wrong_action_penalty[idx] += -0.01
                 action_taken[idx] = action
+                logging.debug(f"Vehicle {idx} chọn action đã được chọn trước đó, phạt -0.01.")
                 continue
 
             # Thực hiện hành động mới
@@ -780,6 +792,7 @@ class Environment(gym.Env):
                 self.action_memory[action] = 1
                 self.solution[action] = idx
                 self.max_selection_turn[idx] -= 1
+                logging.debug(f"Vehicle {idx} thực hiện action {action}, cập nhật action_memory và solution.")
 
             action_taken[idx] = action
 
@@ -800,6 +813,7 @@ class Environment(gym.Env):
                     all_done = False
             if all_done:
                 break
+        logging.debug("Hoàn tất xử lý tiến trình nhiệm vụ cho tất cả vehicle.")
 
         # Tính tổng phần thưởng và nhiệm vụ hoàn thành
         intime = False
@@ -813,6 +827,8 @@ class Environment(gym.Env):
                 rewards[idx] = [prof_sys + wrong_action_penalty[idx]]
             if vehicle.is_on_time():
                 intime = True
+        logging.info(f"Tổng profit hệ thống: {total_system_profit}, nhiệm vụ hoàn thành: {total_completed_tasks}")
+
 
         # Kiểm tra điều kiện kết thúc episode
         done = (
@@ -830,11 +846,12 @@ class Environment(gym.Env):
         obs = self.get_observations()
 
         if self.verbose:
-            print(self.action_memory)
-            print(
+            logging.debug(self.action_memory)
+            logging.info(
                 f"---> Tổng profit hệ thống {total_system_profit}, nhiệm vụ hoàn thành {total_completed_tasks}"
             )
 
+        logging.debug("=== Kết thúc step_env ===\n")
         return obs, rewards, self.done, truncated, done_process_info_list, action_taken
 
     # step_ma

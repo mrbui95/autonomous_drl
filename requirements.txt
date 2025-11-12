@@ -1,5 +1,6 @@
 geopy
 gymnasium
+logging
 matplotlib
 networkx
 numpy
