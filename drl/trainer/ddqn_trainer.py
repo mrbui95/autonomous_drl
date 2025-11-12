@@ -398,24 +398,27 @@ class DDQNTrainer:
     # run_episode_modify_reward
     def run_episode_with_reward_adjustment(self):
         """
-        Runs a single episode with reward modification for multi-agent DRL.
+        Chạy một episode duy nhất với việc điều chỉnh phần thưởng cho bài toán học tăng cường đa tác tử (multi-agent DRL).
 
-        Returns:
-            scores (list): List of rewards gained by each agent per timestep.
+        Trả về:
+            scores (list): Danh sách phần thưởng của từng agent theo từng bước thời gian.
         """
-        # Initialize reward scores for each agent
+        # Khởi tạo danh sách điểm thưởng cho mỗi agent
         scores = [[] for _ in range(self.env.env_data['num_vehicles'])]
+        print(f"[INIT] Số lượng agent: {len(scores)}")  
 
-        # Reset environment and get initial states
+        # Reset môi trường và lấy trạng thái ban đầu
         env_info = self.env.reset_environment()
         states = env_info[0]
+        print("[ENV] Môi trường đã reset, trạng thái ban đầu nhận được.")
 
-        # Store information for reward modification
+        # Lưu thông tin để điều chỉnh phần thưởng sau
         modify_data = {
             "step": [], "state": [], "action": [], "current_wards": [],
             "next_state": [], "modified_infor": [], "dones": []
         }
 
+        # Lịch sử hành động để tránh trùng lặp
         action_history = []
 
         for t in range(self.max_episode_length):
@@ -424,7 +427,7 @@ class DDQNTrainer:
 
             processed_states, actions, actions_save, log_probs = [], [], [], []
 
-            # Sample actions for each agent
+            # --- Lấy hành động cho mỗi agent ---
             for agent_idx, state_key in enumerate(states):
                 agent = self.agents[agent_idx]
                 obs = torch.from_numpy(np.reshape(states[state_key], (1, -1))).float()
@@ -433,6 +436,7 @@ class DDQNTrainer:
                 # Avoid duplicate states and actions
                 if any(torch.equal(obs, ps) for ps in processed_states) \
                     and int(np.argmax(action[1])) in action_history:
+                    print(f"[WARN] Bỏ qua agent {agent_idx} vì trùng hành động/trạng thái.")
                     continue
 
                 processed_states.append(obs)
@@ -441,11 +445,14 @@ class DDQNTrainer:
                 actions_save.append(action[1])
                 action_history.append(int(np.argmax(action[1])))
 
-            # Step environment
+            print(f"[INFO] Tổng số hành động hợp lệ ở bước {t}: {len(actions)}")
+
+            # Thực hiện hành động trong môi trường
             next_states, rewards, dones, truncated, modified_info, actions = self.execute_environment_step(actions, states)
             dones = [dones] * len(states)
+            print(f"[ENV] Môi trường trả về rewards: {rewards}")
 
-            # Store info for reward adjustment
+            # Lưu dữ liệu cho giai đoạn điều chỉnh phần thưởng
             modify_data['step'].append(t)
             modify_data['state'].append(states)
             modify_data['action'].append(actions)
@@ -454,9 +461,10 @@ class DDQNTrainer:
             modify_data['modified_infor'].append(modified_info)
             modify_data['dones'].append(dones)
 
-            # Train agents if update frequency is reached
+            # Huấn luyện các agent nếu đạt tần suất cập nhật
             if self.agents[0].train_start < self.current_step > self.start_train_step \
                 and self.current_step % self.env.env_data['max_missions_per_vehicle'] == 0:
+                print("[TRAIN] Bắt đầu huấn luyện agent...")
                 threads = []
                 for idx, agent in enumerate(self.agents):
                     if not self.thread:
@@ -472,25 +480,33 @@ class DDQNTrainer:
                 if not self.detach_thread:
                     for thread in threads:
                         thread.join()
+                print("[TRAIN] Hoàn thành huấn luyện cho batch hiện tại.")
 
-            # Update target networks periodically
+            # Cập nhật mạng mục tiêu định kỳ
             if self.current_step > 0 and self.current_step % 1000 == 0:
+                print("[SYNC] Cập nhật target network cho các agent.")
                 for agent in self.agents:
                     agent.update_target_model()
 
-            # Update raw scores
+            # Cập nhật điểm thưởng thô
             for agent_idx, reward in rewards.items():
                 scores[agent_idx] += reward
+            print(f"[REWARD] Điểm thưởng cập nhật: {scores}")
 
-            # End episode if any agent finished
+            # Kiểm tra kết thúc episode
             if np.any(dones):
+                print("[DONE] Một hoặc nhiều agent đã hoàn thành nhiệm vụ, kết thúc episode.")
                 break
-
+            
+            # Cập nhật trạng thái
             states = next_states
 
-        # Apply modified rewards after episode
+        # Áp dụng điều chỉnh phần thưởng sau khi episode kết thúc
+        print("[POST] Áp dụng điều chỉnh phần thưởng...")
         self.apply_modified_rewards(modify_data)
+        print("[POST] Hoàn thành điều chỉnh phần thưởng.")
 
+        print("=== Kết thúc run_episode_with_reward_adjustment ===\n")
         return scores
 
     # run_episode_ma
@@ -637,10 +653,12 @@ class DDQNTrainer:
 
         # Chạy episode dựa trên thiết lập modify_reward
         if ddqn_config['modify_reward']:
+            print("Episode chạy có điều chỉnh reward")
             rewards_per_timestep = self.run_episode_with_reward_adjustment()
         else:
-            rewards_per_timestep = self.run_single_episode()
             print("Episode chạy mà không điều chỉnh reward")
+            rewards_per_timestep = self.run_single_episode()
+            
 
         # Tính tổng reward của từng agent trong episode
         total_rewards_per_agent = np.sum(rewards_per_timestep, axis=1)

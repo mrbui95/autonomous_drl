@@ -863,8 +863,6 @@ class Environment(gym.Env):
             vehicle.process_mission_orders()  # Sắp xếp thứ tự thực hiện nhiệm vụ
 
         # Xử lý các nhiệm vụ cho đến khi tất cả hoàn thành
-        import time
-
         start_time = time.perf_counter()
         while True:
             terminate_loop = True
