@@ -16,6 +16,10 @@ logging.basicConfig(
     level=logging.DEBUG,  # có thể đổi thành INFO khi muốn giảm log
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     datefmt="%H:%M:%S",
+    handlers=[
+        logging.FileHandler("./logs/app.log", mode='a', encoding='utf-8'),
+        logging.StreamHandler()  # In ra màn hình
+    ]
 )
 
 if DEVICE != "cpu":
