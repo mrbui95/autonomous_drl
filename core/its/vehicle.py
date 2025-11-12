@@ -103,31 +103,38 @@ class Vehicle(Observer):
         # Danh sách thứ tự nhiệm vụ mà phương tiện sẽ thực hiện
         self.__mission_order = []
 
+    # get_vid
     def get_vehicle_id(self):
         """Trả về ID của phương tiện."""
         return self.__vehicle_id
 
+    # get_pos
     def get_position(self):
         """Lấy vị trí hiện tại của phương tiện."""
         return self.__current_position
 
+    # set_pos
     def set_position(self, position):
         """Cập nhật vị trí hiện tại của phương tiện."""
         self.__current_position = position
 
+    # reset
     @staticmethod
     def reset_vehicle_id_counter():
         """Đặt lại bộ đếm ID cho tất cả phương tiện."""
         Vehicle.vehicle_counter = 0
 
+    # get_ctrl_time
     def get_control_time(self):
         """Trả về thời gian điều khiển hiện tại của phương tiện."""
         return self.__control_time
     
+    # get_accepted_missions
     def get_accepted_missions(self):
         """Trả về Danh sách nhiệm vụ đã chấp nhận nhưng chưa bắt đầu."""
-        return self.__accepted_missions
+        return self.__missions
 
+    # set_mission
     def assign_missions(self, solution, mission_list=[], has_order_tuple=False):
         """
         Gán các nhiệm vụ (mission) cho phương tiện dựa trên kết quả giải pháp đầu vào.
@@ -144,60 +151,60 @@ class Vehicle(Observer):
             ValueError: Nếu loại dữ liệu của solution không hợp lệ.
         """
 
-        logging.debug(f"[Vehicle {self.__vehicle_id}] Bắt đầu gán mission. On_time={self.__on_time}, has_order_tuple={has_order_tuple}")
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Bắt đầu gán mission. On_time={self.__on_time}, has_order_tuple={has_order_tuple}")
 
         if not self.__on_time:
-            logging.debug(f"[Vehicle {self.__vehicle_id}] Phương tiện không trong trạng thái hoạt động, bỏ qua.")
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Phương tiện không trong trạng thái hoạt động, bỏ qua.")
             return
 
         # Trường hợp 1: solution là danh sách hoặc mảng numpy (mặc định)
         if isinstance(solution, (list, np.ndarray)) and not has_order_tuple:
-            logging.debug(f"[Vehicle {self.__vehicle_id}] Xử lý solution dạng list/array: {solution}")
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Xử lý solution dạng list/array: {solution}")
             for index, vehicle_id in enumerate(solution):
                 if vehicle_id == self.__vehicle_id:
                     mission_index = mission_list.index(int(index))
                     mission = mission_list[mission_index]
-                    logging.debug(f"[Vehicle {self.__vehicle_id}] Nhận mission {mission.get_mission_id()} từ index={index}")
+                    logger.debug(f"[Vehicle {self.__vehicle_id}] Nhận mission {mission.get_mission_id()} từ index={index}")
 
                     self.accept_mission(mission=mission)
-                    logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} được accept thành công.")
+                    logger.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} được accept thành công.")
 
                     if len(mission.get_dependencies()) == 0:
                         mission.update_status(new_status=1)
-                        logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} sẵn sàng (status=1).")
+                        logger.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} sẵn sàng (status=1).")
 
                     if self.__non_priority_orders and mission.get_status() == 1:
                         self.__ready_missions.append(mission)
                         self.__missions.remove(mission)
-                        logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} thêm vào ready_missions.")
+                        logger.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} thêm vào ready_missions.")
                     else:
                         self.check_and_move_ready_mission()
-                        logging.debug(f"[Vehicle {self.__vehicle_id}] Kiểm tra và di chuyển mission sẵn sàng.")
+                        logger.debug(f"[Vehicle {self.__vehicle_id}] Kiểm tra và di chuyển mission sẵn sàng.")
 
         # Trường hợp 2: solution là chỉ số của mission
         elif isinstance(solution, (int, np.int64)):
-            logging.debug(f"[Vehicle {self.__vehicle_id}] Xử lý solution dạng int: {solution}")
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Xử lý solution dạng int: {solution}")
             mission_index = mission_list.index(solution)
             mission = mission_list[mission_index]
-            logging.debug(f"[Vehicle {self.__vehicle_id}] Nhận mission {mission.get_mission_id()} từ chỉ số {solution}")
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Nhận mission {mission.get_mission_id()} từ chỉ số {solution}")
 
             if len(mission.get_dependencies()) == 0:
                 mission.update_status(new_status=1)
-                logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} sẵn sàng (status=1).")
+                logger.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} sẵn sàng (status=1).")
 
             self.accept_mission(mission=mission)
-            logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} được accept thành công.")
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} được accept thành công.")
 
             if self.__non_priority_orders and mission.get_status() == 1:
                 self.__ready_missions.append(mission)
                 self.__missions.remove(mission)
-                logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} thêm vào ready_missions.")
+                logger.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} thêm vào ready_missions.")
             else:
                 self.check_and_move_ready_mission()
-                logging.debug(f"[Vehicle {self.__vehicle_id}] Kiểm tra và di chuyển mission sẵn sàng.")
+                logger.debug(f"[Vehicle {self.__vehicle_id}] Kiểm tra và di chuyển mission sẵn sàng.")
 
             result = len(self.__ready_missions) > 0
-            logging.debug(f"[Vehicle {self.__vehicle_id}] Tổng số mission sẵn sàng: {len(self.__ready_missions)}")
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Tổng số mission sẵn sàng: {len(self.__ready_missions)}")
             return result
 
         # Trường hợp 3: solution là danh sách tuple (thứ tự, ID phương tiện)
@@ -226,6 +233,7 @@ class Vehicle(Observer):
         else:
             raise ValueError("Giá trị đầu vào 'solution' không hợp lệ.")
 
+    # fit_order
     def process_mission_orders(self):
         """
         Xử lý và sắp xếp thứ tự thực hiện nhiệm vụ cho phương tiện.
@@ -266,6 +274,7 @@ class Vehicle(Observer):
         self.__missions = accepted_missions
         self.__accepted_missions = accepted_missions.copy()
 
+    # accept_mission
     def accept_mission(self, mission, order=None):
         """
         Chấp nhận một nhiệm vụ và (nếu có) gán thứ tự thực hiện cho nhiệm vụ đó.
@@ -289,6 +298,7 @@ class Vehicle(Observer):
         self.__missions.append(mission)
         self.__accepted_missions.append(mission)
 
+    # update
     def update(self, mission, current_time: int = 0):
         """
         Cập nhật trạng thái của phương tiện dựa trên nhiệm vụ đã hoàn thành và thời gian hiện tại.
@@ -311,6 +321,7 @@ class Vehicle(Observer):
 
         return num_removed_dependencies
 
+    # check_ready
     def check_ready(self, mission):
         """
         Kiểm tra và cập nhật trạng thái sẵn sàng của các nhiệm vụ dựa trên phụ thuộc.
@@ -359,30 +370,63 @@ class Vehicle(Observer):
 
         return removed_depends_count
 
+    # verify_ready
     def check_and_move_ready_mission(self):
         """
         Kiểm tra và xác nhận nhiệm vụ đầu tiên đã sẵn sàng hay chưa.
         Nếu nhiệm vụ không còn phụ thuộc, chưa có nhiệm vụ nào trong hàng chờ sẵn sàng
         và không ở chế độ không ưu tiên, nhiệm vụ đó sẽ được chuyển sang danh sách sẵn sàng.
         """
+        logger.debug(
+            f"[Vehicle {self.__vehicle_id}] Bắt đầu kiểm tra nhiệm vụ sẵn sàng: "
+            f"missions={len(self.__missions)}, ready_missions={len(self.__ready_missions)}, "
+            f"non_priority_orders={self.__non_priority_orders}"
+        )
+
         if len(self.__missions) < 1:
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Không có nhiệm vụ nào trong danh sách missions.")
             return
+        
+        first_mission = self.__missions[0]
 
         if (
-            len(self.__missions[0].get_dependencies()) == 0
+            len(first_mission.get_dependencies()) == 0
             and len(self.__ready_missions) == 0
             and not self.__non_priority_orders
         ):
+            logger.debug(
+                f"[Vehicle {self.__vehicle_id}] "
+                f"Nhiệm vụ {first_mission.get_mission_id()} không có phụ thuộc, sẵn sàng chuyển sang ready_missions."
+            )
+
             # Di chuyển nhiệm vụ đầu tiên sang danh sách nhiệm vụ sẵn sàng
-            self.__ready_missions.append(self.__missions[0])
+            self.__ready_missions.append(first_mission)
 
             # Nếu nhiệm vụ này nằm trong danh sách nhiệm vụ đã chấp nhận, thì xóa khỏi đó
-            if self.__missions[0] in self.__accepted_missions:
-                self.__accepted_missions.remove(self.__missions[0])
+            if first_mission in self.__accepted_missions:
+                self.__accepted_missions.remove(first_mission)
+                logger.debug(
+                    f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {first_mission.get_mission_id()} "
+                    f"đã bị xóa khỏi danh sách accepted_missions."
+                )
 
             # Xóa nhiệm vụ khỏi danh sách đang xử lý
-            self.__missions.remove(self.__missions[0])
+            self.__missions.remove(first_mission)
+            logger.debug(
+                f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {first_mission.get_mission_id()} "
+                f"đã được di chuyển sang ready_missions. "
+                f"Số lượng ready_missions hiện tại: {len(self.__ready_missions)}"
+            )
+        else:
+            logger.debug(
+                f"[Vehicle {self.__vehicle_id}] "
+                f"Nhiệm vụ đầu tiên chưa sẵn sàng hoặc có điều kiện không phù hợp "
+                f"(dependencies={len(first_mission.get_dependencies())}, "
+                f"ready_missions={len(self.__ready_missions)}, "
+                f"non_priority_orders={self.__non_priority_orders})"
+            )
 
+    # inprocess
     def has_ready_missions(self):
         """
         Kiểm tra xem có nhiệm vụ nào đang trong hàng chờ sẵn sàng hay không.
@@ -390,10 +434,12 @@ class Vehicle(Observer):
         """
         return len(self.__ready_missions) > 0
 
+    # check_time
     def is_on_time(self):
         """Kiểm tra xem phương tiện hoặc nhiệm vụ có đang trong thời gian hợp lệ không."""
         return self.__on_time
 
+    # process_mission
     def process_mission(self, missions=None):
         """
         Xử lý nhiệm vụ mà phương tiện đang sẵn sàng thực hiện.
@@ -565,12 +611,14 @@ class Vehicle(Observer):
             profit,
         )
 
+    # clear_total_reward
     def reset_total_reward(self):
         """Đặt lại toàn bộ phần thưởng và lợi nhuận của phương tiện."""
         self.__vehicle_profit = 0
         self.__completed_count = 0
         self.__profit = 0
 
+    # get_profits
     def calc_profit(self, mission):
         """Tính tổng lợi nhuận từ danh sách hoặc một nhiệm vụ duy nhất."""
         profit = 0
@@ -581,18 +629,22 @@ class Vehicle(Observer):
             profit += mission.get_profit()
         return profit
 
+    # get_accepted_missions
     def get_assigned_missions(self):
         """Trả về danh sách các nhiệm vụ đã được gán cho phương tiện."""
         return self.__missions
 
+    # get_vhicle_prof
     def get_vehicle_profit(self):
         """Trả về tổng lợi nhuận của phương tiện."""
         return self.__vehicle_profit
 
+    # get_earn_profit
     def get_total_profit(self):
         """Trả về tổng lợi nhuận kiếm được."""
         return self.__profit
 
+    # get_earn_completes
     def get_total_completed(self):
         """Trả về số nhiệm vụ đã hoàn thành."""
         return self.__completed_count
