@@ -807,7 +807,7 @@ class Environment(gym.Env):
             all_done = True
             for idx, vehicle in enumerate(self.vehicles):
                 vehicle.process_mission(self.missions)
-            for vehicle in enumerate (self.vehicles):
+            for vehicle in self.vehicles:
                 vehicle.check_and_move_ready_mission()
             for vehicle in self.vehicles:
                 if vehicle.has_ready_missions():
