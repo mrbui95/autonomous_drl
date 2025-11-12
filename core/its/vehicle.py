@@ -1,5 +1,7 @@
 import numpy as np
 
+import logging
+
 from core.its.mission import Mission
 from utils.patterns.observer import Observer
 
@@ -7,6 +9,8 @@ from core.geometry.line import Line
 from core.mec.mec_network import MECNetwork
 
 from config.config import task_config
+
+logger = logging.getLogger(__name__)
 
 
 class Vehicle(Observer):
@@ -379,11 +383,15 @@ class Vehicle(Observer):
         có cùng lộ trình để tối ưu thời gian và lợi nhuận.
         """
 
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Bắt đầu xử lý mission. Ready_missions={len(self.__ready_missions)}, On_time={self.__on_time}")
+
         if len(self.__ready_missions) == 0 or not self.__on_time:
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Không có nhiệm vụ sẵn sàng hoặc đã quá hạn thời gian.")
             return
 
         # Lấy nhiệm vụ đầu tiên trong danh sách sẵn sàng
         current_mission = self.__ready_missions.pop(0)
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Lấy mission đầu tiên: {current_mission.get_mission_id()}.")
 
         if len(current_mission.get_dependencies()) != 0:
             raise ValueError("Nhiệm vụ chưa sẵn sàng để xử lý.")
@@ -393,6 +401,7 @@ class Vehicle(Observer):
         best_path_to_mission, distance_to_mission = current_mission.get_path_to_start(
             vehicle_pos
         )
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Khoảng cách đến mission: {distance_to_mission:.2f} m.")
 
         # --- Bước 2: Xử lý các nhiệm vụ có cùng cung đường ---
         main_mission = current_mission
@@ -405,6 +414,7 @@ class Vehicle(Observer):
 
         for mission in list(self.__ready_missions):
             if mission != current_mission and current_mission.is_in_other_road(mission):
+                logger.debug(f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {mission.get_mission_id()} cùng cung đường với {current_mission.get_mission_id()}.")
                 if len(mission.get_shortest_path()) > max_path_len:
                     main_mission = mission
                     max_path_len = len(mission.get_shortest_path())
@@ -416,11 +426,13 @@ class Vehicle(Observer):
 
         main_mission.set_profit(total_profit)
         route = main_mission.get_shortest_path()
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Tổng lợi nhuận sau khi gộp nhiệm vụ: {total_profit:.2f}, Tổng chiều dài: {total_length:.2f}.")
 
         # --- Bước 3: Tính toán quãng đường và độ trễ khi di chuyển ---
         road_segments = self.__road_map.get_segments()
         completed_count = 0
         total_delay = distance_to_mission / 10  # vận tốc trung bình: 10 m/s
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Bắt đầu di chuyển, delay ban đầu: {total_delay:.2f}s.")
 
         if best_path_to_mission:
             best_path_to_mission.pop(-1)
@@ -436,6 +448,8 @@ class Vehicle(Observer):
             offload_tasks = current_segment.get_offloading_tasks()
             offload_delay = 0
             on_road_time = start_point.get_dis_to_point(next_point) / avg_speed
+
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Di chuyển từ {start_point} -> {next_point}, tốc độ TB={avg_speed:.2f}, thời gian={on_road_time:.2f}s, offload_tasks={len(offload_tasks)}")
 
             # --- Xử lý offloading task trên đoạn đường ---
             for off_task in offload_tasks:
@@ -453,6 +467,7 @@ class Vehicle(Observer):
                 offload_delay += cur_delay
 
                 main_mission.update_profit(-task_config["cost_coefficient"])
+                logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
 
             total_delay += offload_delay + on_road_time
 
@@ -462,6 +477,7 @@ class Vehicle(Observer):
                 if self.__control_time + total_delay < self.__tau:
                     completed_count += 1
                 else:
+                    logger.warning(f"[Vehicle {self.__vehicle_id}] Mission bị trễ, không thể hoàn thành đúng hạn.")
                     break
 
                 idx = same_route_missions.index(start_point)
@@ -478,9 +494,11 @@ class Vehicle(Observer):
                 if mission in self.__ready_missions:
                     self.__ready_missions.remove(mission)
 
-                print(f"Nhiệm vụ {mission.get_mission_id()} đã hoàn thành.")
+                logger.info(f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {mission.get_mission_id()} đã hoàn thành.")
+
 
         self.__control_time += total_delay
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Tổng thời gian sau khi xử lý: {self.__control_time:.2f}s (Giới hạn {self.__tau:.2f}s)")
 
         # --- Bước 4: Xử lý các nhiệm vụ trễ ---
         if self.__control_time > self.__tau:
@@ -490,7 +508,7 @@ class Vehicle(Observer):
             self.__missions.clear()
             self.__ready_missions.clear()
             self.__on_time = False
-            print("Hết thời gian thực hiện nhiệm vụ.")
+            logger.warning(f"[Vehicle {self.__vehicle_id}] Hết thời gian thực hiện nhiệm vụ.")
             return
 
         # --- Bước 5: Tính lợi nhuận ---
@@ -508,6 +526,7 @@ class Vehicle(Observer):
         self.__profit += remain_profit
         self.__completed_count += completed_count
         self.__vehicle_profit += profit
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Profit đạt được: {profit:.2f}, Completed={completed_count}, Total_vehicle_profit={self.__vehicle_profit:.2f}")
 
         # --- Bước 6: Kiểm tra lại thời gian ---
         if self.__control_time > self.__tau:
@@ -516,7 +535,9 @@ class Vehicle(Observer):
             self.__missions.clear()
             self.__ready_missions.clear()
             self.__on_time = False
-            print("Hết thời gian thực hiện nhiệm vụ.")
+            logger.warning(f"[Vehicle {self.__vehicle_id}] Hết thời gian thực hiện nhiệm vụ (sau khi tính lại).")
+
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Hoàn tất xử lý mission {current_mission.get_mission_id()}.\n")
 
         return (
             self.__vehicle_id,
