@@ -13,7 +13,7 @@ from config.drl_config import ddqn_config
 from ray.tune.registry import register_env
 
 logging.basicConfig(
-    level=logging.DEBUG,  # có thể đổi thành INFO khi muốn giảm log
+    level=logging.INFO,  # có thể đổi thành INFO khi muốn giảm log, DEBUG để hiển thị toàn bộ log
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     datefmt="%H:%M:%S",
     handlers=[
@@ -146,7 +146,7 @@ def train_agents(
             trainer.print_status()
 
         # Tính điểm trung bình của các episode gần nhất
-        print(trainer.score_history, trainer.score_history.shape)
+        print(trainer.score_history, trainer.score_history)
         recent_scores = np.array(trainer.score_history[:, -score_window:])
         mean_reward = np.max(recent_scores, axis=1).mean()
         print(
