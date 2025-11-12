@@ -143,44 +143,62 @@ class Vehicle(Observer):
         Ngoại lệ:
             ValueError: Nếu loại dữ liệu của solution không hợp lệ.
         """
+
+        logging.debug(f"[Vehicle {self.__vehicle_id}] Bắt đầu gán mission. On_time={self.__on_time}, has_order_tuple={has_order_tuple}")
+
         if not self.__on_time:
+            logging.debug(f"[Vehicle {self.__vehicle_id}] Phương tiện không trong trạng thái hoạt động, bỏ qua.")
             return
 
         # Trường hợp 1: solution là danh sách hoặc mảng numpy (mặc định)
         if isinstance(solution, (list, np.ndarray)) and not has_order_tuple:
+            logging.debug(f"[Vehicle {self.__vehicle_id}] Xử lý solution dạng list/array: {solution}")
             for index, vehicle_id in enumerate(solution):
                 if vehicle_id == self.__vehicle_id:
                     mission_index = mission_list.index(int(index))
                     mission = mission_list[mission_index]
+                    logging.debug(f"[Vehicle {self.__vehicle_id}] Nhận mission {mission.get_mission_id()} từ index={index}")
 
                     self.accept_mission(mission=mission)
+                    logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} được accept thành công.")
 
                     if len(mission.get_dependencies()) == 0:
                         mission.update_status(new_status=1)
+                        logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} sẵn sàng (status=1).")
 
                     if self.__non_priority_orders and mission.get_status() == 1:
                         self.__ready_missions.append(mission)
                         self.__missions.remove(mission)
+                        logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} thêm vào ready_missions.")
                     else:
                         self.check_and_move_ready_mission()
+                        logging.debug(f"[Vehicle {self.__vehicle_id}] Kiểm tra và di chuyển mission sẵn sàng.")
 
         # Trường hợp 2: solution là chỉ số của mission
         elif isinstance(solution, (int, np.int64)):
+            logging.debug(f"[Vehicle {self.__vehicle_id}] Xử lý solution dạng int: {solution}")
             mission_index = mission_list.index(solution)
             mission = mission_list[mission_index]
+            logging.debug(f"[Vehicle {self.__vehicle_id}] Nhận mission {mission.get_mission_id()} từ chỉ số {solution}")
 
             if len(mission.get_dependencies()) == 0:
                 mission.update_status(new_status=1)
+                logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} sẵn sàng (status=1).")
 
             self.accept_mission(mission=mission)
+            logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} được accept thành công.")
 
             if self.__non_priority_orders and mission.get_status() == 1:
                 self.__ready_missions.append(mission)
                 self.__missions.remove(mission)
+                logging.debug(f"[Vehicle {self.__vehicle_id}] Mission {mission.get_mission_id()} thêm vào ready_missions.")
             else:
                 self.check_and_move_ready_mission()
+                logging.debug(f"[Vehicle {self.__vehicle_id}] Kiểm tra và di chuyển mission sẵn sàng.")
 
-            return len(self.__ready_missions) > 0
+            result = len(self.__ready_missions) > 0
+            logging.debug(f"[Vehicle {self.__vehicle_id}] Tổng số mission sẵn sàng: {len(self.__ready_missions)}")
+            return result
 
         # Trường hợp 3: solution là danh sách tuple (thứ tự, ID phương tiện)
         elif isinstance(solution, (list, np.ndarray)) and has_order_tuple:

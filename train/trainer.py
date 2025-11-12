@@ -14,7 +14,7 @@ from ray.tune.registry import register_env
 
 logging.basicConfig(
     level=logging.DEBUG,  # có thể đổi thành INFO khi muốn giảm log
-    format="%(asctime)s [%(levelname)s] %(message)s",
+    format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     datefmt="%H:%M:%S",
 )
 
