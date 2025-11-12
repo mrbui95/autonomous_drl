@@ -806,10 +806,9 @@ class Environment(gym.Env):
         while True:
             all_done = True
             for idx, vehicle in enumerate(self.vehicles):
-                done_info = vehicle.process_mission(self.missions)
-                done_process_info_list.append(done_info)
-                if done_info is None:
-                    all_done = False
+                vehicle.process_mission(self.missions)
+            for vehicle in enumerate (self.vehicles):
+                vehicle.check_and_move_ready_mission()
             for vehicle in self.vehicles:
                 if vehicle.has_ready_missions():
                     all_done = False
