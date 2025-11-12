@@ -329,7 +329,7 @@ class DDQNTrainer:
 
         # Tính reward bổ sung dựa trên mission hoàn thành và các yếu tố
         for step_idx, step_info in enumerate(modify_data["modified_infor"]):
-            logger.info('step_idx', step_idx, ', step_info', step_info)
+            print('step_idx', step_idx, ', step_info', step_info)
             for entry in step_info:
                 if entry is None:
                     continue
@@ -352,7 +352,7 @@ class DDQNTrainer:
                         ) + completed_count * mission_config[
                             "n_mission"
                         ]
-                        logger.info(
+                        print(
                             "Reward update -> Vehicle:",
                             vehicle_id,
                             "Completed:",
@@ -763,7 +763,7 @@ class DDQNTrainer:
         ).item()
 
         # In trạng thái hiện tại ra terminal
-        logger.info(
+        print(
             f'\033[1mEpisode {self.current_episode} - '
             f'Mean Max Reward: {mean_max_reward:.2f}\033[0m'
             f'\n\t{agent_info_str}\n\t'
