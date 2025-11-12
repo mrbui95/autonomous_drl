@@ -17,9 +17,9 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     datefmt="%H:%M:%S",
     handlers=[
-        logging.FileHandler("./logs/app.log", mode='a', encoding='utf-8'),
-        logging.StreamHandler()  # In ra màn hình
-    ]
+        logging.FileHandler("./logs/app.log", mode="a", encoding="utf-8"),
+        logging.StreamHandler(),  # In ra màn hình
+    ],
 )
 
 if DEVICE != "cpu":
@@ -146,8 +146,7 @@ def train_agents(
             trainer.print_status()
 
         # Tính điểm trung bình của các episode gần nhất
-        print(trainer.score_history, trainer.score_history)
-        recent_scores = np.array(trainer.score_history[:, -score_window:])
+        recent_scores = trainer.score_history[-score_window:]
         mean_reward = np.max(recent_scores, axis=1).mean()
         print(
             f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
