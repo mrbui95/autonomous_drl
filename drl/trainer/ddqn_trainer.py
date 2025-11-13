@@ -276,7 +276,7 @@ class DDQNTrainer:
 
                 threads = []
                 for agent in self.agents:
-                    if not self.thread:
+                    if not self.use_thread:
                         agent.train_model()
                     else:
                         thread = threading.Thread(target=agent.train_model)
@@ -489,7 +489,7 @@ class DDQNTrainer:
                 logger.debug("[TRAIN] Bắt đầu huấn luyện agent...")
                 threads = []
                 for idx, agent in enumerate(self.agents):
-                    if not self.thread:
+                    if not self.use_thread:
                         agent.train_model()
                     else:
                         t_thread = threading.Thread(target=agent.train_model)
@@ -634,7 +634,7 @@ class DDQNTrainer:
         if self.agents[0].train_start < self.current_step > self.start_train_step:
             threads = []
             for idx, agent in enumerate(self.agents):
-                if not self.thread:
+                if not self.use_thread:
                     agent.train_model()
                 else:
                     t_thread = threading.Thread(target=agent.train_model)
