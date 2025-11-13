@@ -757,7 +757,7 @@ class Environment(gym.Env):
             # Lựa chọn hành động dựa trên agent hoặc greedy
             if agents is not None:
                 agent = agents[idx]
-                if (agent.epsilon > self.rng.random()):
+                if (agent.epsilon > self.rng.random()): # khi exploration
                     action = self.rng.integers(0, agent.action_dim)
                     logger.debug(f"Vehicle {idx} chọn action ngẫu nhiên: {action}")
                 else:
@@ -809,6 +809,7 @@ class Environment(gym.Env):
                 vehicle.process_mission(self.missions)
             for vehicle in self.vehicles:
                 vehicle.check_and_move_ready_mission()
+                # vehicle.check_ready()
             for vehicle in self.vehicles:
                 if vehicle.has_ready_missions():
                     all_done = False

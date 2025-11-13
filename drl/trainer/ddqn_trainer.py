@@ -347,8 +347,8 @@ class DDQNTrainer:
                         ) * (
                             (mission_config["max_missions_per_vehicle"] - agent_idx)
                             * n_remove_depends
-                            * 50
-                            - n_waiting * 50
+                            * 50 # fix cứng
+                            - n_waiting * 50 # fix cứng
                         ) + completed_count * mission_config[
                             "n_mission"
                         ]
@@ -513,7 +513,7 @@ class DDQNTrainer:
             # Cập nhật điểm thưởng thô
             for agent_idx, reward in rewards.items():
                 scores[agent_idx] += reward
-            logger.debug(f"[REWARD] Điểm thưởng cập nhật: {scores}")
+            logger.info(f"[REWARD] Điểm thưởng cập nhật: {scores}")
 
             # Kiểm tra kết thúc episode
             if np.any(dones):

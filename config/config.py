@@ -7,7 +7,7 @@ map_config = {
     "radius": 2500,
     "num_roads": 15,
     "traffic_level": 1,
-    "from_file": 0,
+    "from_file": 1,
 }
 """
 Cấu hình bản đồ cho đối tượng Map.
