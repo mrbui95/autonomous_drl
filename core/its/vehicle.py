@@ -30,7 +30,7 @@ class Vehicle(Observer):
         cpu_freq,
         current_position,
         road_map,
-        tau=120,
+        tau=60,
         verbose=False,
         strategy=0,
         non_priority_orders=False,

@@ -80,7 +80,7 @@ other_config = {
     'apply_thread': 0,
     'apply_detach': 0,
     'score_window_size': 100,
-    'tau': 60
+    'tau': 3600 # giây
 }
 
 
