@@ -466,7 +466,11 @@ class Environment(gym.Env):
 
         # Quan hệ mission mà mỗi vehicle đang giữ
         vehicle_missions_depends_array = np.zeros(
-            (self.env_data["num_vehicles"], self.env_data["max_missions_per_vehicle"], 10),
+            (
+                self.env_data["num_vehicles"],
+                self.env_data["max_missions_per_vehicle"],
+                10,
+            ),
             dtype=np.float32,
         )
         for v_idx, vehicle in enumerate(self.vehicles):
@@ -586,7 +590,10 @@ class Environment(gym.Env):
         """
         # --- Chuẩn bị thông tin segment và mission ---
         segment_info = np.array(
-            [[segment.get_distance(), segment.get_status()] for segment in self.env_data["segments"]],
+            [
+                [segment.get_distance(), segment.get_status()]
+                for segment in self.env_data["segments"]
+            ],
             dtype=np.float32,
         )
         mission_lengths = np.array(
@@ -606,7 +613,11 @@ class Environment(gym.Env):
 
         # Mảng phụ thuộc các mission mà vehicle đang giữ
         vehicle_missions_depends_array = np.zeros(
-            (self.env_data["num_vehicles"], self.env_data["max_missions_per_vehicle"], 10),
+            (
+                self.env_data["num_vehicles"],
+                self.env_data["max_missions_per_vehicle"],
+                10,
+            ),
             dtype=np.float32,
         )
         for v_idx, vehicle in enumerate(self.vehicles):
@@ -740,7 +751,9 @@ class Environment(gym.Env):
 
             # Nếu tất cả nhiệm vụ đã được chọn
             if (self.action_memory == 1).all():
-                logger.info("Tất cả nhiệm vụ đã được chọn. Đánh dấu action -1 cho vehicle còn lại.")
+                logger.info(
+                    "Tất cả nhiệm vụ đã được chọn. Đánh dấu action -1 cho vehicle còn lại."
+                )
                 for v in range(self.env_data["num_vehicles"]):
                     if v not in action_taken:
                         action_taken[v] = -1
@@ -757,7 +770,7 @@ class Environment(gym.Env):
             # Lựa chọn hành động dựa trên agent hoặc greedy
             if agents is not None:
                 agent = agents[idx]
-                if (agent.epsilon > self.rng.random()):
+                if agent.epsilon > self.rng.random():
                     action = self.rng.integers(0, agent.action_dim)
                     logger.debug(f"Vehicle {idx} chọn action ngẫu nhiên: {action}")
                 else:
@@ -785,7 +798,9 @@ class Environment(gym.Env):
                 )
                 wrong_action_penalty[idx] += -0.01
                 action_taken[idx] = action
-                logger.debug(f"Vehicle {idx} chọn action đã được chọn trước đó, phạt -0.01.")
+                logger.debug(
+                    f"Vehicle {idx} chọn action đã được chọn trước đó, phạt -0.01."
+                )
                 continue
 
             # Thực hiện hành động mới
@@ -794,7 +809,9 @@ class Environment(gym.Env):
                 self.action_memory[action] = 1
                 self.solution[action] = idx
                 self.max_selection_turn[idx] -= 1
-                logger.debug(f"Vehicle {idx} thực hiện action {action}, cập nhật action_memory và solution.")
+                logger.debug(
+                    f"Vehicle {idx} thực hiện action {action}, cập nhật action_memory và solution."
+                )
 
             action_taken[idx] = action
 
@@ -806,7 +823,8 @@ class Environment(gym.Env):
         while True:
             all_done = True
             for idx, vehicle in enumerate(self.vehicles):
-                vehicle.process_mission(self.missions)
+                done_process_info = vehicle.process_mission(self.missions)
+                done_process_info_list.append(done_process_info)
             for vehicle in self.vehicles:
                 vehicle.check_and_move_ready_mission()
             for vehicle in self.vehicles:
@@ -828,8 +846,9 @@ class Environment(gym.Env):
                 rewards[idx] = [prof_sys + wrong_action_penalty[idx]]
             if vehicle.is_on_time():
                 intime = True
-        logger.info(f"Tổng profit hệ thống: {total_system_profit}, nhiệm vụ hoàn thành: {total_completed_tasks}")
-
+        logger.info(
+            f"Tổng profit hệ thống: {total_system_profit}, nhiệm vụ hoàn thành: {total_completed_tasks}"
+        )
 
         # Kiểm tra điều kiện kết thúc episode
         done = (
