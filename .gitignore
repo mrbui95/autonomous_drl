@@ -1,7 +1,7 @@
 venv
-__pycache__
 .vscode/
 *.png
 data/*.png
 data/*.pkl
 logs
+*.pyc

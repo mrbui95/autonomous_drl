@@ -350,7 +350,7 @@ class DDQNTrainer:
                             * 50 # fix cứng
                             - n_waiting * 50 # fix cứng
                         ) + completed_count * mission_config[
-                            "n_mission"
+                            "total_missions"
                         ]
                         print(
                             "Reward update -> Vehicle:",
@@ -363,7 +363,7 @@ class DDQNTrainer:
                             n_waiting,
                             "Old reward:",
                             modify_data["current_wards"][agent_idx][vehicle_id],
-                            "Added reward:",
+                            "additional_reward:",
                             additional_reward,
                         )
 
