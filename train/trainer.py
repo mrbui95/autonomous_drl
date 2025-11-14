@@ -13,7 +13,7 @@ from config.drl_config import ddqn_config
 from ray.tune.registry import register_env
 
 logging.basicConfig(
-    level=logging.DEBUG,  # có thể đổi thành INFO khi muốn giảm log, DEBUG để hiển thị toàn bộ log
+    level=logging.INFO,  # có thể đổi thành INFO khi muốn giảm log, DEBUG để hiển thị toàn bộ log
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     datefmt="%H:%M:%S",
     handlers=[

@@ -102,7 +102,6 @@ class Vehicle(Observer):
 
         # Danh sách thứ tự nhiệm vụ mà phương tiện sẽ thực hiện
         self.__mission_order = []
-
     # get_vid
     def get_vehicle_id(self):
         """Trả về ID của phương tiện."""
@@ -264,14 +263,14 @@ class Vehicle(Observer):
                         # Nhiệm vụ sẵn sàng → chuyển sang danh sách ready
                         self.__ready_missions.append(mission)
                         self.__missions.remove(mission)
-                        self.__accepted_missions.remove(mission)
+                        # self.__accepted_missions.remove(mission)
                     else:
                         # Nhiệm vụ chưa sẵn sàng → đánh dấu và lưu lại
                         is_ready = False
                         accepted_missions.append(mission)
 
         # Cập nhật lại danh sách
-        self.__missions = accepted_missions
+        self.__missions = accepted_missions.copy()
         self.__accepted_missions = accepted_missions.copy()
 
     # accept_mission
@@ -403,12 +402,12 @@ class Vehicle(Observer):
             self.__ready_missions.append(first_mission)
 
             # Nếu nhiệm vụ này nằm trong danh sách nhiệm vụ đã chấp nhận, thì xóa khỏi đó
-            if first_mission in self.__accepted_missions:
-                self.__accepted_missions.remove(first_mission)
-                logger.debug(
-                    f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {first_mission.get_mission_id()} "
-                    f"đã bị xóa khỏi danh sách accepted_missions."
-                )
+            # if first_mission in self.__accepted_missions:
+            #     self.__accepted_missions.remove(first_mission)
+            #     logger.debug(
+            #         f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {first_mission.get_mission_id()} "
+            #         f"đã bị xóa khỏi danh sách accepted_missions."
+            #     )
 
             # Xóa nhiệm vụ khỏi danh sách đang xử lý
             self.__missions.remove(first_mission)
@@ -501,7 +500,6 @@ class Vehicle(Observer):
         if best_path_to_mission:
             best_path_to_mission.pop(-1)
         route = best_path_to_mission + route
-
         while len(route) > 1:
             start_point = route.pop(0)
             next_point = route[0]
@@ -552,7 +550,6 @@ class Vehicle(Observer):
                     dependent_missions=missions,
                     time=self.__control_time + total_delay,
                 )
-
                 if mission in self.__missions:
                     self.__missions.remove(mission)
                 if mission in self.__ready_missions:
@@ -564,6 +561,23 @@ class Vehicle(Observer):
         self.__control_time += total_delay
         logger.debug(f"[Vehicle {self.__vehicle_id}] Tổng thời gian sau khi xử lý: {self.__control_time:.2f}s (Giới hạn {self.__tau:.2f}s)")
 
+        
+        while route[0] in end_points:
+            end_points.remove(route[0])
+            if self.__control_time < self.__tau:
+                completed_count += 1
+            else:
+                break
+            idx = same_route_missions.index(route[0])
+            mission = same_route_missions[idx]
+            if mission in self.__missions:
+                self.__missions.remove(mission)
+            if mission in self.__ready_missions:
+                self.__ready_missions.remove(mission)
+            n_remove_depends = mission.update_status(2, missions, time = self.__control_time)
+            logger.info(f"[Vehicle {self.__vehicle_id}] Nhiệm vụ {mission.get_mission_id()} đã hoàn thành.")
+        
+        
         # --- Bước 4: Xử lý các nhiệm vụ trễ ---
         if self.__control_time > self.__tau:
             self.__vehicle_profit -= (
@@ -581,7 +595,7 @@ class Vehicle(Observer):
             p = end_points.pop(0)
             idx = self.__accepted_missions.index(p)
             total_mis_profit += self.__accepted_missions[idx].get_profit()
-            self.__late += 1
+            self.__lateness_count += 1
 
         remain_profit = main_mission.get_profit() - total_mis_profit
         remain_profit = max(remain_profit, 0)

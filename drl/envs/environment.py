@@ -827,6 +827,7 @@ class Environment(gym.Env):
                 done_process_info_list.append(done_process_info)
             for vehicle in self.vehicles:
                 vehicle.check_and_move_ready_mission()
+                # vehicle.check_ready()
             for vehicle in self.vehicles:
                 if vehicle.has_ready_missions():
                     all_done = False
