@@ -377,43 +377,46 @@ class DDQNTrainer:
         # Cập nhật memory cho từng agent
         for step_idx, state_dict in enumerate(modify_data["state"]):
             for agent_idx, vehicle_key in enumerate(state_dict):
-                action_val = modify_data["action"][step_idx][agent_idx]
-                current_reward = modify_data["current_wards"][step_idx][agent_idx]
-                next_state = modify_data["next_state"][step_idx][vehicle_key]
-                done_flag = modify_data["dones"][step_idx][agent_idx]
+                try:
+                    action_val = modify_data["action"][step_idx][agent_idx]
+                    current_reward = modify_data["current_wards"][step_idx][agent_idx]
+                    next_state = modify_data["next_state"][step_idx][vehicle_key]
+                    done_flag = modify_data["dones"][step_idx][agent_idx]
 
-                if reward_changed_flags[step_idx] and action_val != -1:
-                    # Thêm vào cả global memory và local memory
-                    self.agents[agent_idx].add_global_experience(
-                        state_dict[vehicle_key],
-                        action_val,
-                        current_reward,
-                        next_state,
-                        done_flag,
-                    )
-                    self.agents[agent_idx].add_experience(
-                        state_dict[vehicle_key],
-                        action_val,
-                        current_reward,
-                        next_state,
-                        done_flag,
-                    )
-                elif action_val != -1:
-                    # Nếu không thay đổi reward, vẫn thêm -100
-                    self.agents[agent_idx].add_experience(
-                        state_dict[vehicle_key],
-                        action_val,
-                        [-100],
-                        next_state,
-                        done_flag,
-                    )
-                    self.agents[agent_idx].add_global_experience(
-                        state_dict[vehicle_key],
-                        action_val,
-                        [-100],
-                        next_state,
-                        done_flag,
-                    )
+                    if reward_changed_flags[step_idx] and action_val != -1:
+                        # Thêm vào cả global memory và local memory
+                        self.agents[agent_idx].add_global_experience(
+                            state_dict[vehicle_key],
+                            action_val,
+                            current_reward,
+                            next_state,
+                            done_flag,
+                        )
+                        self.agents[agent_idx].add_experience(
+                            state_dict[vehicle_key],
+                            action_val,
+                            current_reward,
+                            next_state,
+                            done_flag,
+                        )
+                    elif action_val != -1:
+                        # Nếu không thay đổi reward, vẫn thêm -100
+                        self.agents[agent_idx].add_experience(
+                            state_dict[vehicle_key],
+                            action_val,
+                            [-100],
+                            next_state,
+                            done_flag,
+                        )
+                        self.agents[agent_idx].add_global_experience(
+                            state_dict[vehicle_key],
+                            action_val,
+                            [-100],
+                            next_state,
+                            done_flag,
+                        )
+                except:
+                    pass
 
         return 0
 
