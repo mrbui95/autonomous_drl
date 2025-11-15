@@ -796,7 +796,7 @@ class Environment(gym.Env):
                     states[list(states.keys())[idx]],
                     1,
                 )
-                wrong_action_penalty[idx] += -0.01
+                wrong_action_penalty[idx] += -0.01 * self.ideal_avg_reward
                 action_taken[idx] = action
                 logger.debug(
                     f"Vehicle {idx} chọn action đã được chọn trước đó, phạt -0.01."
@@ -825,9 +825,6 @@ class Environment(gym.Env):
             for idx, vehicle in enumerate(self.vehicles):
                 done_process_info = vehicle.process_mission(self.missions)
                 done_process_info_list.append(done_process_info)
-            for vehicle in self.vehicles:
-                vehicle.check_and_move_ready_mission()
-                # vehicle.check_ready()
             for vehicle in self.vehicles:
                 if vehicle.has_ready_missions():
                     all_done = False

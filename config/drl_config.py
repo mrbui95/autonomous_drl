@@ -1,3 +1,4 @@
+epoch_size = 1000
 
 ddqn_config = {
     "discount_factor":0.95,

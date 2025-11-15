@@ -529,7 +529,7 @@ class Vehicle(Observer):
                 offload_delay += cur_delay
 
                 main_mission.update_profit(-task_config["cost_coefficient"])
-                logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
+                # logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
 
             total_delay += offload_delay + on_road_time
 

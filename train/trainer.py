@@ -9,7 +9,7 @@ from drl.envs.data_loader import DataLoader
 from drl.envs.environment import Environment
 from drl.trainer.ddqn_trainer import DDQNTrainer
 from config.config import DEVICE
-from config.drl_config import ddqn_config
+from config.drl_config import ddqn_config, epoch_size
 from ray.tune.registry import register_env
 
 logging.basicConfig(
@@ -21,6 +21,8 @@ logging.basicConfig(
         logging.StreamHandler(),  # In ra màn hình
     ],
 )
+
+logger = logging.getLogger(__name__)
 
 if DEVICE != "cpu":
     device = torch.device("cuda:" + str(DEVICE) if torch.cuda.is_available() else "cpu")
@@ -80,7 +82,6 @@ def create_trainer(
     score_window_size=100,
     use_thread=True,
     detach_thread=True,
-    trainer_type="DDQNTrainer",
 ):
     """
     Tạo và khởi tạo trainer để huấn luyện các agent trong môi trường.
@@ -136,8 +137,16 @@ def train_agents(
         target_score: Mức điểm trung bình tối thiểu để coi là đã "hoàn thành" môi trường.
         score_window: Số episode gần nhất để tính điểm trung bình.
     """
+    logger.info("===== BẮT ĐẦU HUẤN LUYỆN AGENTS =====")
+    logger.info(f"Max episodes: {max_episodes}")
+    logger.info(f"Target score: {target_score}")
+    logger.info(f"Score window: {score_window}")
+    logger.info(f"Số agents: {len(trainer.agents)}")
+    logger.info(f"Môi trường: {env.__class__.__name__}")
+    logger.info(f"Trainer: {trainer.__class__.__name__}")
 
     for episode_idx in range(1, max_episodes + 1):
+        logger.debug(f"[Episode {episode_idx}] Bắt đầu episode...")
         # Thực hiện 1 bước huấn luyện (episode)
         trainer.run_episode_step()
 
@@ -147,30 +156,55 @@ def train_agents(
 
         # Tính điểm trung bình của các episode gần nhất
         recent_scores = trainer.score_history[-score_window:]
+        logger.debug(
+            f"[Episode {episode_idx}] Score history length: {len(trainer.score_history)}"
+        )
         mean_reward = np.max(recent_scores, axis=1).mean()
-        print(
+        logger.info(
             f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
         )
 
+        logger.debug(
+            f"[Episode {episode_idx}] Mean reward computed from max rewards per episode."
+        )
+
         # Lưu model và plot định kỳ
-        if episode_idx % 1000 == 0:
+        if episode_idx % epoch_size == 0:
+            logger.debug(f"[Episode {episode_idx}] Lưu model và plot định kỳ.")
             trainer.save_models()
             trainer.print_status()
             trainer.df_scores()
         elif episode_idx % score_window == 0:
+            logger.debug(
+                f"[Episode {episode_idx}] Cập nhật df_scores() theo score_window."
+            )
             trainer.print_status()
             trainer.df_scores()
 
         # Dừng huấn luyện nếu đạt target_score hoặc hết max_episodes
-        if mean_reward >= target_score or episode_idx == max_episodes:
-            print("Môi trường đã được giải quyết hoặc đạt max episode.")
+        if mean_reward >= target_score:
+            logger.info(
+                f"⛳ Target đạt được! Mean reward = {mean_reward:.2f} >= {target_score}"
+            )
+            logger.debug("Bắt đầu lưu model cuối cùng trước khi thoát.")
             trainer.save_models()
             trainer.print_status()
             trainer.df_scores()
+            logger.debug("Đóng môi trường.")
+            env.close()
+            break
+
+        if episode_idx == max_episodes:
+            logger.info("🛑 Đã đạt max_episodes, dừng huấn luyện.")
+            trainer.save_models()
+            trainer.print_status()
+            trainer.df_scores()
+            logger.debug("Đóng môi trường.")
             env.close()
             break
 
 
+# ddqn
 def run_ddqn_training(**kwargs):
     """
     Khởi tạo và huấn luyện các agent sử dụng thuật toán DDQN trong môi trường ITS.
@@ -217,13 +251,8 @@ def run_ddqn_training(**kwargs):
     state_dim = np.prod(env.observation_space.shape)
     action_dim = env.action_space.shape[0]
 
-    print(
-        "======num_agents: ",
-        num_agents,
-        ", state_dim:",
-        state_dim,
-        ", action_dim: ",
-        action_dim,
+    logger.info(
+        f"====== num_agents: {num_agents}, state_dim: {state_dim}, action_dim: {action_dim}"
     )
 
     # --- 6. Initialize DDQN agents ---
@@ -254,9 +283,7 @@ def run_ddqn_training(**kwargs):
         use_thread=env_config["apply_thread"],
         detach_thread=env_config["apply_detach"],
         score_window_size=env_config["score_window_size"],
-        max_episode_length=env_config["max_missions_per_vehicle"]
-        * env_config["num_vehicles"],
-        trainer_type="DDQNTrainer",
+        max_episode_length=env_config["max_missions_per_vehicle"] * env_config["num_vehicles"],
         update_interval=ddqn_config["batch_size"] / 4,
     )
 

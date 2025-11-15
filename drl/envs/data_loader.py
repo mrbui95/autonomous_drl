@@ -99,7 +99,7 @@ class DataLoader:
 
     def get_mission_data(self):
         """Trả về mission data, graph, và map."""
-        return self.missions_data, self.graph, self.map
+        return self.missions_data, self.graph, DataLoader.shared_map
 
     def generate_config_from_file(self):
         """

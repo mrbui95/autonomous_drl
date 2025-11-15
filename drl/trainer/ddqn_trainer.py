@@ -8,7 +8,7 @@ import logging
 
 from core.task_generator import TaskGenerator
 from config.config import mission_config
-from config.drl_config import ddqn_config
+from config.drl_config import ddqn_config, epoch_size
 
 logger = logging.getLogger(__name__)
 
@@ -670,6 +670,9 @@ class DDQNTrainer:
             - self.max_score: tổng reward cao nhất quan sát được
             - self.episode_length_history: độ dài của từng episode
         """
+        logger.info(f"===== BẮT ĐẦU EPISODE {self.current_episode} =====")
+        logging.debug(f"EPISODE  {self.current_episode}: current_step - {self.current_step}")
+
         # Tăng bộ đếm episode
         self.current_episode += 1
 
@@ -682,13 +685,37 @@ class DDQNTrainer:
             rewards_per_timestep = self.run_single_episode()
             
 
+        logger.debug(
+            f"[Episode {self.current_episode}] Reward per timestep shape: {np.array(rewards_per_timestep).shape}"
+        )
+        logger.debug(
+            f"[Episode {self.current_episode}] Rewards per timestep (preview): "
+            f"{str(rewards_per_timestep[:3]) + ' ...'}"
+        )
+
         # Tính tổng reward của từng agent trong episode
         total_rewards_per_agent = np.sum(rewards_per_timestep, axis=1)
+
+        logger.debug(
+            f"[Episode {self.current_episode}] Tổng reward per agent: {total_rewards_per_agent}"
+        )
 
         # Lưu lịch sử reward và độ dài episode
         self.score_history.append(total_rewards_per_agent)
         self.max_score = max(total_rewards_per_agent)
         self.episode_length_history.append(len(rewards_per_timestep))
+
+        logger.debug(
+            f"[Episode {self.current_episode}] Max score (agent tốt nhất): {self.max_score}"
+        )
+        logger.debug(
+            f"[Episode {self.current_episode}] Episode length: {len(rewards_per_timestep)} timesteps"
+        )
+        logger.debug(
+            f"[Episode {self.current_episode}] Đã lưu vào score_history và episode_length_history."
+        )
+
+        logger.debug(f"===== KẾT THÚC EPISODE {self.current_episode} =====")
 
     # step_ma
     def run_multi_action_episode(self):
@@ -726,7 +753,12 @@ class DDQNTrainer:
         for agent_idx, agent in enumerate(self.agents):
             # Tạo tên file checkpoint cho agent hiện tại
             checkpoint_path = f"{self.checkpoints_dir}/agent_{agent_idx}_{self.current_episode}.pth"
-            
+
+            if (self.current_episode > 0):
+                last_episode = self.current_episode - epoch_size
+                old_checkpoint_path = f"{self.checkpoints_dir}/agent_{agent_idx}_{last_episode}.pth"
+                agent.delete_old_model(old_checkpoint_path)
+
             # Lưu mô hình của agent
             agent.save_model(checkpoint_path)
 
@@ -763,7 +795,7 @@ class DDQNTrainer:
         ).item()
 
         # In trạng thái hiện tại ra terminal
-        print(
+        logger.info(
             f'\033[1mEpisode {self.current_episode} - '
             f'Mean Max Reward: {mean_max_reward:.2f}\033[0m'
             f'\n\t{agent_info_str}\n\t'

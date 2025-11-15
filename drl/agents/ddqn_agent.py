@@ -3,12 +3,17 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import random
+import os
 
 from collections import deque
 from threading import Lock
 
 from config.drl_config import ddqn_config
 from config.config import SEED_GLOBAL, DEVICE
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 if DEVICE != "cpu":
     device = torch.device("cuda:" + str(DEVICE) if torch.cuda.is_available() else "cpu")
@@ -121,6 +126,13 @@ class DDQNAgent(nn.Module):
     def save_model(self, name):
         """Lưu trọng số model vào file."""
         torch.save(self.model.state_dict(), name)
+
+    def delete_old_model(self, path):
+        if os.path.exists(path):
+            os.remove(path)
+            logger.info(f"Đã xóa file model cũ: {path}")
+        else:
+            logger.debug(f"File model cũ không tồn tại, không cần xóa: {path}")
 
     def update_target_model(self):
         """Cập nhật target network từ model chính."""
