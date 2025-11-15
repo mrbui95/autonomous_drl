@@ -329,7 +329,7 @@ class DDQNTrainer:
 
         # Tính reward bổ sung dựa trên mission hoàn thành và các yếu tố
         for step_idx, step_info in enumerate(modify_data["modified_infor"]):
-            print('step_idx', step_idx, ', step_info', step_info)
+            logger.info(f"step_idx: {step_idx}, step_info: {step_info}")
             for entry in step_info:
                 if entry is None:
                     continue
@@ -352,20 +352,8 @@ class DDQNTrainer:
                         ) + completed_count * mission_config[
                             "total_missions"
                         ]
-                        print(
-                            "Reward update -> Vehicle:",
-                            vehicle_id,
-                            "Completed:",
-                            completed_count,
-                            "Removed dependencies:",
-                            n_remove_depends,
-                            "Waiting:",
-                            n_waiting,
-                            "Old reward:",
-                            modify_data["current_wards"][agent_idx][vehicle_id],
-                            "additional_reward:",
-                            additional_reward,
-                        )
+                        logger.info(
+                            f"Reward update -> Vehicle: {vehicle_id}, Completed: {completed_count}, Removed dependencies: {n_remove_depends}, Waiting: {n_waiting}, Old reward: {modify_data["current_wards"][agent_idx][vehicle_id]}, additional_reward: {additional_reward}")
 
                         modify_data["current_wards"][agent_idx][vehicle_id][0] = (
                             profit + additional_reward
