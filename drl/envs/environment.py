@@ -9,7 +9,7 @@ import logging
 from math import sqrt
 from gymnasium.spaces import Box
 from ray.tune.registry import register_env
-from config.config import SEED_GLOBAL, mission_config
+from config.config import SEED_GLOBAL, mission_config, eval
 from core.its.mission import Mission
 from core.its.vehicle import Vehicle
 from core.task_generator import TaskGenerator
@@ -167,12 +167,10 @@ class Environment(gym.Env):
 
         # Nếu cần reset từ file hoặc chế độ predict
         if (self.done and reload_file and not eval) or predict:
-            if self.verbose:
-                print("---------> Reset môi trường, done =", self.done)
+            logger.info(f"---------> Reset môi trường, done = {self.done}")
             # Sinh lại cấu hình nhiệm vụ
-            data_loader = DataLoader(mission_file=self.missions)
-            self.env_data = data_loader.generate_config_not_from_file(
-                self.task_generator
+            self.env_data = DataLoader.generate_config_not_from_file(
+                mission_generator=self.task_generator
             )
             self.current_step = 0
 
@@ -228,9 +226,8 @@ class Environment(gym.Env):
             if self.verbose:
                 print("---------> Reset môi trường (meta), done =", self.done)
             # Sinh lại cấu hình nhiệm vụ
-            data_loader = DataLoader(mission_file=self.missions)
-            self.env_data = data_loader.generate_config_not_from_file(
-                self.task_generator
+            self.env_data = DataLoader.generate_config_not_from_file(
+                mission_generator=self.task_generator
             )
             self.current_step = 0
 

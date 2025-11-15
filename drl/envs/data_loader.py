@@ -128,6 +128,7 @@ class DataLoader:
         print("Finish loading data from file.")
         return config, self.graph, self.map
 
+    @staticmethod
     def generate_config_not_from_file(mission_generator):
         """
         Tạo config khi khởi tạo missions không từ file.
