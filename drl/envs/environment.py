@@ -782,14 +782,14 @@ class Environment(gym.Env):
                 agent.add_experience(
                     states[list(states.keys())[idx]],
                     action,
-                    [-0.01],
+                    [-0.01 * self.ideal_avg_reward],
                     states[list(states.keys())[idx]],
                     1,
                 )
                 agent.add_global_experience(
                     states[list(states.keys())[idx]],
                     action,
-                    [-0.01],
+                    [-0.01 * self.ideal_avg_reward],
                     states[list(states.keys())[idx]],
                     1,
                 )
@@ -817,11 +817,14 @@ class Environment(gym.Env):
             vehicle.reset_total_reward()
 
         # Xử lý tiến trình nhiệm vụ
+        count_done = 0
         while True:
             all_done = True
             for idx, vehicle in enumerate(self.vehicles):
                 done_process_info = vehicle.process_mission(self.missions)
                 done_process_info_list.append(done_process_info)
+                if done_process_info == None:
+                    count_done += 1
             for vehicle in self.vehicles:
                 if vehicle.has_ready_missions():
                     all_done = False
@@ -852,7 +855,8 @@ class Environment(gym.Env):
             or not intime
         )
         truncated = False
-        if done:
+        if done or count_done == self.env_data['num_vehicles']:
+            logger.info(f"action_memory: ${self.action_memory}")
             self.done = True
         else:
             self.done = False
@@ -861,7 +865,7 @@ class Environment(gym.Env):
         obs = self.get_observations()
 
         if self.verbose:
-            logger.debug(self.action_memory)
+            logger.debug(f"DEBUG action_memory: {self.action_memory}")
             logger.info(
                 f"---> Tổng profit hệ thống {total_system_profit}, nhiệm vụ hoàn thành {total_completed_tasks}"
             )
