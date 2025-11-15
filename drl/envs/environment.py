@@ -819,6 +819,7 @@ class Environment(gym.Env):
         # Xử lý tiến trình nhiệm vụ
         count_done = 0
         while True:
+            count_done = 0
             all_done = True
             for idx, vehicle in enumerate(self.vehicles):
                 done_process_info = vehicle.process_mission(self.missions)
@@ -856,7 +857,7 @@ class Environment(gym.Env):
         )
         truncated = False
         if done or count_done == self.env_data['num_vehicles']:
-            logger.info(f"action_memory: ${self.action_memory}")
+            logger.info(f"done: {done}, count_done: {count_done} action_memory: ${self.action_memory}")
             self.done = True
         else:
             self.done = False
