@@ -9,7 +9,7 @@ from collections import deque
 from threading import Lock
 
 from config.drl_config import ddqn_config
-from config.config import SEED_GLOBAL, DEVICE
+from config.config import SEED_GLOBAL, DEVICE, eval
 
 import logging
 
@@ -135,8 +135,24 @@ class DDQNAgent(nn.Module):
             logger.debug(f"File model cũ không tồn tại, không cần xóa: {path}")
 
     def update_target_model(self):
+        logger.debug("===== [UPDATE TARGET MODEL] =====")
+
+        with torch.no_grad():
+            main_weights = torch.cat([p.data.flatten() for p in self.model.parameters()])
+            logger.debug(
+                f"[MAIN MODEL] weights: min={main_weights.min():.6f}, "
+                f"max={main_weights.max():.6f}, mean={main_weights.mean():.6f}"
+            )
+
         """Cập nhật target network từ model chính."""
         self.target_model.load_state_dict(self.model.state_dict())
+
+        with torch.no_grad():
+            target_weights = torch.cat([p.data.flatten() for p in self.target_model.parameters()])
+            logger.debug(
+                f"[TARGET MODEL] updated: min={target_weights.min():.6f}, "
+                f"max={target_weights.max():.6f}, mean={target_weights.mean():.6f}"
+            )
 
     # get_action
     def select_action(self, state, agent_id=None):
@@ -207,13 +223,15 @@ class DDQNAgent(nn.Module):
         """
         # Nếu đang ở chế độ đánh giá, không train
         if eval:
+            logger.info(f"eval ===> do nothing")
             return
 
         # Cập nhật epsilon decay
         if self.epsilon > self.epsilon_min:
+            logger.info(f"[EPSILON-DECAY] epsilon={self.epsilon:.6f}, lr={self.lr}")
             self.epsilon *= self.epsilon_decay
-            print(f"Learning rate: {self.lr}")
-        print(f"Epsilon = {self.epsilon}")
+            logger.info(f"Learning rate: {self.lr}")
+        logger.debug(f"[TRAIN] Epsilon hiện tại = {self.epsilon:.6f}")
 
         # Lock để train an toàn khi đa luồng
         self.lock.acquire()
@@ -223,9 +241,15 @@ class DDQNAgent(nn.Module):
                 self.rng.random() > 1 - ddqn_config["combine"]
                 and len(self.global_memory) >= self.batch_size
             ):
+                logger.debug(
+                    f"[MEMORY] Sử dụng GLOBAL memory - size={len(self.global_memory)}"
+                )
                 mini_batch = random.sample(self.global_memory, self.batch_size)
             else:
+                logger.debug(f"[MEMORY] Sử dụng LOCAL memory - size={len(self.memory)}")
                 mini_batch = random.sample(self.memory, self.batch_size)
+
+            logger.debug(f"[MEMORY] Mini-batch size = {len(mini_batch)}")
 
             # Khởi tạo arrays cho states, next_states
             states = np.zeros((self.batch_size, self.state_dim))
@@ -240,6 +264,14 @@ class DDQNAgent(nn.Module):
                 next_states[i] = mini_batch[i][3]
                 dones.append(mini_batch[i][4])
 
+            logger.debug(
+                f"[BATCH] actions(min={min(actions)}, max={max(actions)}, len={len(actions)})"
+            )
+            logger.debug(
+                f"[BATCH] rewards(min={min(rewards):.2f}, max={max(rewards):.2f})"
+            )
+            logger.debug(f"[BATCH] dones = {sum(dones)} true / {len(dones)}")
+
             # Chuyển dữ liệu sang tensor trên device
             states = torch.FloatTensor(states).to(device)
             next_states = torch.FloatTensor(next_states).to(device)
@@ -247,13 +279,26 @@ class DDQNAgent(nn.Module):
             rewards = torch.FloatTensor(rewards).to(device).reshape([self.batch_size])
             dones = torch.FloatTensor(dones).to(device)
 
+            logger.debug(f"[TENSOR] states.shape = {states.shape}")
+            logger.debug(f"[TENSOR] next_states.shape = {next_states.shape}")
+
             # Tính Q-values hiện tại và Q-values target
             q_values = self.model(states)
             next_q_values = self.target_model(next_states).detach()
 
+            logger.debug(
+                f"[Q] q_values.shape={q_values.shape}, next_q_values.shape={next_q_values.shape}"
+            )
+
             # Tính Q-target theo Double DQN
             max_next_q_values = next_q_values.max(dim=1)[0]
             target_q_values = rewards + (1 - dones) * self.discount * max_next_q_values
+
+            logger.debug(
+                f"[TARGET] reward_avg={rewards.mean():.3f}, "
+                f"max_next_q_avg={max_next_q_values.mean():.3f}, "
+                f"target_avg={target_q_values.mean():.3f}"
+            )
 
             # Kiểm tra action hợp lệ
             assert (
@@ -263,12 +308,17 @@ class DDQNAgent(nn.Module):
 
             # Lấy Q-value hiện tại tương ứng với action đã chọn
             current_q_values = q_values.gather(1, actions).squeeze(1)
+            logger.debug(
+                f"[Q-CURRENT] current_q_avg={current_q_values.mean().item():.3f}"
+            )
 
             # Backpropagation
             self.optimizer.zero_grad()
             loss = self.loss_fn(current_q_values, target_q_values)
             loss.backward()
             self.optimizer.step()
+
+            logger.debug(f"[UPDATE] Loss = {loss.item():.6f}")
 
         finally:
             self.lock.release()
