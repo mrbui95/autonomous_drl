@@ -16,8 +16,8 @@ def get_ideal_expected_reward():
     """
     # Quãng đường tối đa có thể di chuyển trong một segment (mét)
     # max_speed: tốc độ tối đa (m/s)
-    # tau: thời gian hoạt động của một segment (phút) -> nhân 60 để đổi ra giây
-    max_possible_distance = task_config['max_speed'] * task_config['time_limit'] * 60  
+    # tau: thời gian hoạt động của một segment (giây)
+    max_possible_distance = task_config['max_speed'] * task_config['time_limit']  
 
     # Lợi ích trung bình của một nhiệm vụ (đơn vị tuỳ định nghĩa, ví dụ điểm thưởng)
     avg_mission_benefit = (mission_config['reward_range'][0] + mission_config['reward_range'][1]) / 2

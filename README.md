@@ -25,9 +25,7 @@ Window
 venv\Scripts\activate
 python -m data.generator
 ```
-
-Linux:
-Window
+Linux
 ```bash
 source venv/bin/activate
 python -m data.generator

@@ -72,7 +72,7 @@ class Environment(gym.Env):
 
         # Bộ nhớ action và giải pháp
         self.action_memory = np.zeros(env_data["total_missions"], dtype=int)
-        self.solution = ["None"] * (
+        self.solution = [None] * (
             mission_config["num_vehicles"] * mission_config["max_missions_per_vehicle"]
         )
         self.max_selection_turn = [env_data["max_missions_per_vehicle"]] * env_data[
@@ -190,7 +190,7 @@ class Environment(gym.Env):
 
         # Reset bộ nhớ hành động và solution
         self.action_memory = np.zeros(self.env_data["total_missions"], dtype=int)
-        self.solution = ["None"] * (
+        self.solution = [None] * (
             mission_config["num_vehicles"] * mission_config["max_missions_per_vehicle"]
         )
 
@@ -247,8 +247,8 @@ class Environment(gym.Env):
 
         # Reset bộ nhớ hành động và solution
         self.action_memory = np.zeros(self.env_data["total_missions"], dtype=int)
-        self.solution = ["None"] * (
-            mission_config["n_vehicle"] * mission_config["max_missions_per_vehicle"]
+        self.solution = [None] * (
+            mission_config["num_vehicles"] * mission_config["max_missions_per_vehicle"]
         )
 
         # Lấy observation ban đầu
@@ -801,7 +801,7 @@ class Environment(gym.Env):
                 continue
 
             # Thực hiện hành động mới
-            if self.action_memory[action] == 0:
+            if self.action_memory[action] == False:
                 self.vehicles[idx].assign_missions(action, self.missions)
                 self.action_memory[action] = 1
                 self.solution[action] = idx

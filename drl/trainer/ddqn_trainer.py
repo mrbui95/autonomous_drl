@@ -353,7 +353,8 @@ class DDQNTrainer:
                             "total_missions"
                         ]
                         logger.info(
-                            f"Reward update -> Vehicle: {vehicle_id}, Completed: {completed_count}, Removed dependencies: {n_remove_depends}, Waiting: {n_waiting}, Old reward: {modify_data["current_wards"][agent_idx][vehicle_id]}, additional_reward: {additional_reward}")
+                            f"Reward update -> Vehicle: {vehicle_id}, Completed: {completed_count}, Removed dependencies: {n_remove_depends}, Waiting: {n_waiting}, Old reward: {modify_data['current_wards'][agent_idx][vehicle_id]}, additional_reward: {additional_reward}"
+                            )
 
                         modify_data["current_wards"][agent_idx][vehicle_id][0] = (
                             profit + additional_reward
