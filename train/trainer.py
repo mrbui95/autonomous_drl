@@ -146,63 +146,65 @@ def train_agents(
     logger.info(f"Trainer: {trainer.__class__.__name__}")
 
     for episode_idx in range(1, max_episodes + 1):
-        logger.debug(f"[Episode {episode_idx}] Bắt đầu episode...")
-        # Thực hiện 1 bước huấn luyện (episode)
-        trainer.run_episode_step()
+        try:
+            logger.debug(f"[Episode {episode_idx}] Bắt đầu episode...")
+            # Thực hiện 1 bước huấn luyện (episode)
+            trainer.run_episode_step()
 
-        # In trạng thái huấn luyện định kỳ
-        if episode_idx % 100 == 0:
-            trainer.print_status()
+            # In trạng thái huấn luyện định kỳ
+            if episode_idx % 100 == 0:
+                trainer.print_status()
 
-        # Tính điểm trung bình của các episode gần nhất
-        recent_scores = trainer.score_history[-score_window:]
-        logger.debug(
-            f"[Episode {episode_idx}] Score history length: {len(trainer.score_history)}"
-        )
-        mean_reward = np.max(recent_scores, axis=1).mean()
-        logger.info(
-            f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
-        )
-
-        logger.debug(
-            f"[Episode {episode_idx}] Mean reward computed from max rewards per episode."
-        )
-
-        # Lưu model và plot định kỳ
-        if episode_idx % epoch_size == 0:
-            logger.debug(f"[Episode {episode_idx}] Lưu model và plot định kỳ.")
-            trainer.save_models()
-            trainer.print_status()
-            trainer.df_scores()
-        elif episode_idx % score_window == 0:
+            # Tính điểm trung bình của các episode gần nhất
+            recent_scores = trainer.score_history[-score_window:]
             logger.debug(
-                f"[Episode {episode_idx}] Cập nhật df_scores() theo score_window."
+                f"[Episode {episode_idx}] Score history length: {len(trainer.score_history)}"
             )
-            trainer.print_status()
-            trainer.df_scores()
-
-        # Dừng huấn luyện nếu đạt target_score hoặc hết max_episodes
-        if mean_reward >= target_score:
+            mean_reward = np.max(recent_scores, axis=1).mean()
             logger.info(
-                f"⛳ Target đạt được! Mean reward = {mean_reward:.2f} >= {target_score}"
+                f"Episode {episode_idx} - Mean reward (last {score_window} episodes): {mean_reward:.2f}"
             )
-            logger.debug("Bắt đầu lưu model cuối cùng trước khi thoát.")
-            trainer.save_models()
-            trainer.print_status()
-            trainer.df_scores()
-            logger.debug("Đóng môi trường.")
-            env.close()
-            break
 
-        if episode_idx == max_episodes:
-            logger.info("🛑 Đã đạt max_episodes, dừng huấn luyện.")
-            trainer.save_models()
-            trainer.print_status()
-            trainer.df_scores()
-            logger.debug("Đóng môi trường.")
-            env.close()
-            break
+            logger.debug(
+                f"[Episode {episode_idx}] Mean reward computed from max rewards per episode."
+            )
 
+            # Lưu model và plot định kỳ
+            if episode_idx % epoch_size == 0:
+                logger.debug(f"[Episode {episode_idx}] Lưu model và plot định kỳ.")
+                trainer.save_models()
+                trainer.print_status()
+                trainer.df_scores()
+            elif episode_idx % score_window == 0:
+                logger.debug(
+                    f"[Episode {episode_idx}] Cập nhật df_scores() theo score_window."
+                )
+                trainer.print_status()
+                trainer.df_scores()
+
+            # Dừng huấn luyện nếu đạt target_score hoặc hết max_episodes
+            if mean_reward >= target_score:
+                logger.info(
+                    f"⛳ Target đạt được! Mean reward = {mean_reward:.2f} >= {target_score}"
+                )
+                logger.debug("Bắt đầu lưu model cuối cùng trước khi thoát.")
+                trainer.save_models()
+                trainer.print_status()
+                trainer.df_scores()
+                logger.debug("Đóng môi trường.")
+                env.close()
+                break
+
+            if episode_idx == max_episodes:
+                logger.info("🛑 Đã đạt max_episodes, dừng huấn luyện.")
+                trainer.save_models()
+                trainer.print_status()
+                trainer.df_scores()
+                logger.debug("Đóng môi trường.")
+                env.close()
+                break
+        except Exception as e:
+            logger.error(f"[ERROR] Running error: {e}")
 
 # ddqn
 def run_ddqn_training(**kwargs):
