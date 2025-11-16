@@ -268,7 +268,7 @@ class DDQNAgent(nn.Module):
                 f"[BATCH] actions(min={min(actions)}, max={max(actions)}, len={len(actions)})"
             )
             logger.debug(
-                f"[BATCH] rewards(min={min(rewards):.2f}, max={max(rewards):.2f})"
+                f"[BATCH] rewards={rewards}"
             )
             logger.debug(f"[BATCH] dones = {sum(dones)} true / {len(dones)}")
 
