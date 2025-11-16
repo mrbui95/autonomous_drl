@@ -147,7 +147,7 @@ class TaskGenerator:
 
             # Đảm bảo nhiệm vụ hợp lệ theo giới hạn thời gian
             while (
-                travel_time > task_config["time_limit"] * 60
+                travel_time > task_config["time_limit"]
                 and travel_time < 50 / task_config["max_speed"]
             ):
                 start_point = self.__random.choice(vertices)
@@ -217,7 +217,7 @@ class TaskGenerator:
             travel_time = distance / task_config["max_speed"]
 
             while (
-                travel_time > task_config["time_limit"] * 60
+                travel_time > task_config["time_limit"]
                 and travel_time < 50 / task_config["max_speed"]
             ):
                 start_p = self.__random.choice(vertices)
