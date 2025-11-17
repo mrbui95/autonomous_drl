@@ -9,7 +9,7 @@ from drl.envs.data_loader import DataLoader
 from drl.envs.environment import Environment
 from drl.trainer.ddqn_trainer import DDQNTrainer
 from config.config import DEVICE
-from config.drl_config import ddqn_config, epoch_size
+from config.drl_config import ddqn_config, epoch_size, checkpoint_index
 from ray.tune.registry import register_env
 
 logging.basicConfig(
@@ -145,7 +145,7 @@ def train_agents(
     logger.info(f"Môi trường: {env.__class__.__name__}")
     logger.info(f"Trainer: {trainer.__class__.__name__}")
 
-    for episode_idx in range(1, max_episodes + 1):
+    for episode_idx in range(checkpoint_index, max_episodes + 1):
         try:
             logger.debug(f"[Episode {episode_idx}] Bắt đầu episode...")
             # Thực hiện 1 bước huấn luyện (episode)
@@ -261,7 +261,7 @@ def run_ddqn_training(**kwargs):
     agents = []
     for i in range(num_agents):
         agent = create_agent(
-            state_dim, action_dim, agent_idx=i, load_model=False, checkpoint_idx=0
+            state_dim, action_dim, agent_idx=i, load_model=False, checkpoint_idx=checkpoint_index
         )
         agents.append(agent)
 

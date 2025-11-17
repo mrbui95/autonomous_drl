@@ -119,7 +119,8 @@ mission_config = {
     'total_missions': 25,          # Tổng số nhiệm vụ cần được phân bổ trong hệ thống.
     'reward_range': [50, 100],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
     'num_vehicles': 5,             # Số lượng phương tiện tham gia thực hiện nhiệm vụ.
-    'max_missions_per_vehicle': 5  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
+    'max_missions_per_vehicle': 5,  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
+    'estimate_done_in_one_step': 15  # Số lượng nhiệm vụ dự kiến hoàn thành trong một lượt.
 }
 """
 Cấu hình tổng thể cho hệ thống phân phối nhiệm vụ.

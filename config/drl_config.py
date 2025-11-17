@@ -1,3 +1,5 @@
+checkpoint_index = 42000
+
 epoch_size = 1000
 
 ddqn_config = {
