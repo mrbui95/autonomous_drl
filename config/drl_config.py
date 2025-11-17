@@ -1,4 +1,4 @@
-checkpoint_index = 42000
+checkpoint_index = 0
 
 epoch_size = 1000
 
