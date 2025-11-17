@@ -345,24 +345,16 @@ class DDQNTrainer:
                         and modify_data["current_wards"][agent_idx][vehicle_id][0] >= 0
                     ):
                         # Tính reward bổ sung
-                        # additional_reward = (
-                        #     (vehicle_id + 1) / mission_config["num_vehicles"]
-                        # ) * (
-                        #     (mission_config["max_missions_per_vehicle"] - agent_idx)
-                        #     * n_remove_depends
-                        #     * 50 # fix cứng
-                        #     - n_waiting * 50 # fix cứng
-                        # ) + completed_count * mission_config[
-                        #     "total_missions"
-                        # ]
                         additional_reward = (
-                            n_remove_depends / 20
-                            + (completed_count - n_waiting / 2)
-                            / mission_config["total_missions"]
-                        ) * self.env.ideal_avg_reward  / mission_config["estimate_done_in_one_step"]
-                        logger.info(
-                            f"Reward update -> Vehicle: {vehicle_id}, Completed: {completed_count}, Removed dependencies: {n_remove_depends}, Waiting: {n_waiting}, Old reward: {modify_data['current_wards'][agent_idx][vehicle_id]}, additional_reward: {additional_reward}"
-                        )
+                            (vehicle_id + 1) / mission_config["num_vehicles"]
+                        ) * (
+                            (mission_config["max_missions_per_vehicle"] - agent_idx)
+                            * n_remove_depends
+                            * 50 # fix cứng
+                            - n_waiting * 50 # fix cứng
+                        ) + completed_count * mission_config[
+                            "total_missions"
+                        ]
 
                         modify_data["current_wards"][agent_idx][vehicle_id][0] = (
                             profit + additional_reward
