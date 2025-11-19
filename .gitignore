@@ -5,3 +5,4 @@ data/*.png
 data/*.pkl
 logs
 *.pyc
+*.pth
