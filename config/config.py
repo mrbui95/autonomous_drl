@@ -85,11 +85,11 @@ other_config = {
 
 
 task_config = {
-    'data_size_range': [100, 500],     # Kích thước dữ liệu truyền (kB)
+    'data_size_range': [500, 1000],     # Kích thước dữ liệu truyền (kB)
     'compute_load_range': [1, 3],      # Khối lượng tính toán (MCycles)
     'task_rate_options': [10, 30, 50], # Các giá trị tốc độ sinh tác vụ (task/s)
     'avg_speed': 10,                   # Vận tốc trung bình của xe (m/s)
-    'time_limit': other_config['tau'],                 # Giới hạn thời gian hoàn thành nhiệm vụ (phút)
+    'time_limit': other_config['tau'],                 # Giới hạn thời gian hoàn thành nhiệm vụ (s)
     'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ
     'max_speed': 20                    # Vận tốc cực đại của xe (m/s)
 }

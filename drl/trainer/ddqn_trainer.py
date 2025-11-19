@@ -4,6 +4,7 @@ import torch
 import threading
 import matplotlib.pyplot as plt
 import pandas as pd
+import random
 import logging
 
 from core.task_generator import TaskGenerator
@@ -344,17 +345,6 @@ class DDQNTrainer:
                         actions[vehicle_id] == mission_id
                         and modify_data["current_wards"][agent_idx][vehicle_id][0] >= 0
                     ):
-                        # Tính reward bổ sung
-                        # additional_reward = (
-                        #     (vehicle_id + 1) / mission_config["num_vehicles"]
-                        # ) * (
-                        #     (mission_config["max_missions_per_vehicle"] - agent_idx)
-                        #     * n_remove_depends
-                        #     * 50 # fix cứng
-                        #     - n_waiting * 50 # fix cứng
-                        # ) + completed_count * mission_config[
-                        #     "total_missions"
-                        # ]
                         additional_reward = (
                             n_remove_depends / 20
                             + (completed_count - n_waiting / 2)
@@ -455,7 +445,10 @@ class DDQNTrainer:
             processed_states, actions, actions_save, log_probs = [], [], [], []
 
             # --- Lấy hành động cho mỗi agent ---
-            for agent_idx, state_key in enumerate(states):
+            keys = list(states.keys())
+            random.shuffle(keys)
+            for state_key in keys:
+                agent_idx = int(state_key.split("_")[1])
                 agent = self.agents[agent_idx]
                 obs = torch.from_numpy(np.reshape(states[state_key], (1, -1))).float()
                 action, log_prob = agent.select_actions(obs, agent_idx)

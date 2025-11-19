@@ -8,8 +8,8 @@ class Task:
         Khởi tạo một tác vụ mới.
         
         Args:
-            data_size (float): Kích thước dữ liệu đầu vào (MB, KB, ...).
-            compute_size (float): Độ phức tạp tính toán (chu kỳ CPU hoặc FLOPs).
+            data_size (float): Kích thước dữ liệu đầu vào (kB).
+            compute_size (float): Độ phức tạp tính toán (chu kỳ CPU).
             task_id (int, optional): ID của tác vụ. Nếu không truyền, sẽ tự tăng.
         """
         self.__data_size = data_size

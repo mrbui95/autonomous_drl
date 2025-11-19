@@ -142,7 +142,7 @@ class Environment(gym.Env):
 
             # Tạo đối tượng Vehicle với thông số mặc định và thông tin môi trường
             vehicle = Vehicle(
-                cpu_freq=0.5,
+                cpu_freq=10,
                 current_position=start_point,
                 road_map=self.map_obj,
                 verbose=self.verbose,

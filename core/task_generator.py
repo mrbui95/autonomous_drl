@@ -34,8 +34,8 @@ class TaskGenerator:
         self,
         tau,
         road_map,
-        min_data_size=100,  # KB
-        max_data_size=500,  # KB
+        min_data_size=500,  # KB
+        max_data_size=1000,  # KB
         min_comp_size=1,  # Mcycles
         max_comp_size=3,
     ):  # Mcycles

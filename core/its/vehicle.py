@@ -522,13 +522,19 @@ class Vehicle(Observer):
                 rate, mec_cpu = self.__mec_network.get_rate_and_mec_cpu(
                     current_point, self.__assigned_mec
                 )
-                task_info = off_task.get_info()
-                comm_delay = task_info[0] * 8000 / rate
-                comp_delay = task_info[1] / mec_cpu
-                cur_delay = comm_delay + comp_delay
-                offload_delay += cur_delay
-
-                main_mission.update_profit(-task_config["cost_coefficient"])
+                data_size, compute_size, task_id = off_task.get_info()
+                comm_delay = data_size * 8000 / rate
+                comp_delay = compute_size / mec_cpu
+                mec_delay = comm_delay + comp_delay
+                local_delay = compute_size / self.__cpu_freq
+                is_offload_task = mec_delay < local_delay
+                if (is_offload_task == False):
+                    logger.debug(f"[Vehicle {self.__vehicle_id}] xử lý task tại Local: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, mec_delay={mec_delay:.2f}s, local_delay={local_delay}")
+                delay = mec_delay if is_offload_task else local_delay
+                offload_delay += delay
+                
+                if is_offload_task:
+                    main_mission.update_profit(-task_config["cost_coefficient"])
                 # logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
 
             total_delay += offload_delay + on_road_time
