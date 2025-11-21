@@ -1,0 +1,511 @@
+finish build a graph from segment information
+Thời gian sinh: 0.101s
+→ Nhiệm vụ có phụ thuộc: 18/25
+Thời gian sinh file: 0.1006s, Reset object: 0.5239s
+Thời gian sinh: 0.109s
+→ Nhiệm vụ có phụ thuộc: 14/25
+Thời gian sinh file: 0.1087s, Reset object: 0.4032s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 517.84s (Giới hạn 3600.00s)
+Nhiệm vụ 12 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 12 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1188.44s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 856.16s (Giới hạn 3600.00s)
+Nhiệm vụ 17 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 17 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 950.78s (Giới hạn 3600.00s)
+Nhiệm vụ 2 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 2 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 506.81s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1347.12s (Giới hạn 3600.00s)
+Nhiệm vụ 10 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 10 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2670.39s (Giới hạn 3600.00s)
+Nhiệm vụ 19 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 19 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1652.84s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1211.50s (Giới hạn 3600.00s)
+Nhiệm vụ 22 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 22 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1828.04s (Giới hạn 3600.00s)
+Nhiệm vụ 5 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 5 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 3502.56s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2014.42s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 2111.09s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2474.20s (Giới hạn 3600.00s)
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2635.58s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2431.64s (Giới hạn 3600.00s)
+Nhiệm vụ 20 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 20 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.080s
+→ Nhiệm vụ có phụ thuộc: 12/25
+Thời gian sinh file: 0.0804s, Reset object: 0.4804s
+[Vehicle 1] Tổng thời gian sau khi xử lý: 421.69s (Giới hạn 3600.00s)
+Nhiệm vụ 18 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 18 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 815.93s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 1185.71s (Giới hạn 3600.00s)
+Nhiệm vụ 1 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 1 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 219.97s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 916.10s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1089.87s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2379.90s (Giới hạn 3600.00s)
+Nhiệm vụ 2 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 2 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 556.91s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 697.52s (Giới hạn 3600.00s)
+Nhiệm vụ 20 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 20 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1406.97s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 3466.96s (Giới hạn 3600.00s)
+Nhiệm vụ 4 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 4 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1300.19s (Giới hạn 3600.00s)
+Nhiệm vụ 10 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 10 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2521.09s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3342.71s (Giới hạn 3600.00s)
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2142.92s (Giới hạn 3600.00s)
+Nhiệm vụ 11 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 11 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2377.00s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 5118.22s (Giới hạn 3600.00s)
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2817.51s (Giới hạn 3600.00s)
+Nhiệm vụ 19 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 19 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 3632.62s (Giới hạn 3600.00s)
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1401.02s (Giới hạn 3600.00s)
+Nhiệm vụ 22 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 22 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.098s
+→ Nhiệm vụ có phụ thuộc: 13/25
+Thời gian sinh file: 0.0984s, Reset object: 0.3008s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 523.19s (Giới hạn 3600.00s)
+Nhiệm vụ 23 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 23 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 734.12s (Giới hạn 3600.00s)
+Nhiệm vụ 6 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 6 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 468.25s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 814.08s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1362.06s (Giới hạn 3600.00s)
+Nhiệm vụ 8 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 8 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1553.80s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1556.18s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 135.22s (Giới hạn 3600.00s)
+Nhiệm vụ 2 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 2 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1677.93s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2664.59s (Giới hạn 3600.00s)
+Nhiệm vụ 5 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 5 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2534.01s (Giới hạn 3600.00s)
+Nhiệm vụ 11 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 11 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 607.06s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3565.08s (Giới hạn 3600.00s)
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 3006.90s (Giới hạn 3600.00s)
+Nhiệm vụ 19 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 19 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.088s
+→ Nhiệm vụ có phụ thuộc: 18/25
+Thời gian sinh file: 0.0885s, Reset object: 0.4045s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 366.88s (Giới hạn 3600.00s)
+Nhiệm vụ 20 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 20 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 492.67s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 480.78s (Giới hạn 3600.00s)
+Nhiệm vụ 15 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 15 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 124.79s (Giới hạn 3600.00s)
+Nhiệm vụ 23 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 23 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 374.73s (Giới hạn 3600.00s)
+Nhiệm vụ 22 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 22 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 864.00s (Giới hạn 3600.00s)
+Nhiệm vụ 8 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 8 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1578.22s (Giới hạn 3600.00s)
+Nhiệm vụ 11 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 11 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.082s
+→ Nhiệm vụ có phụ thuộc: 12/25
+Thời gian sinh file: 0.0820s, Reset object: 0.4838s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 628.23s (Giới hạn 3600.00s)
+Nhiệm vụ 12 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 12 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1095.93s (Giới hạn 3600.00s)
+Nhiệm vụ 18 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 18 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1423.32s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1284.76s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1802.40s (Giới hạn 3600.00s)
+Nhiệm vụ 5 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 5 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2943.85s (Giới hạn 3600.00s)
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2777.49s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1820.76s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3287.04s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 3478.97s (Giới hạn 3600.00s)
+Nhiệm vụ 11 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 11 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 3275.88s (Giới hạn 3600.00s)
+Nhiệm vụ 15 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 15 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 1076.22s (Giới hạn 3600.00s)
+Nhiệm vụ 1 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 1 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 2263.80s (Giới hạn 3600.00s)
+Nhiệm vụ 22 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 22 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2170.31s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 3079.82s (Giới hạn 3600.00s)
+Nhiệm vụ 2 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 2 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 4229.96s (Giới hạn 3600.00s)
+[Vehicle 3] Tổng thời gian sau khi xử lý: 3803.13s (Giới hạn 3600.00s)
+Thời gian sinh: 0.108s
+→ Nhiệm vụ có phụ thuộc: 15/25
+Thời gian sinh file: 0.1077s, Reset object: 0.3437s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 914.57s (Giới hạn 3600.00s)
+Nhiệm vụ 12 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 12 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 989.25s (Giới hạn 3600.00s)
+Nhiệm vụ 19 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 19 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 467.88s (Giới hạn 3600.00s)
+Nhiệm vụ 1 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 1 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1197.09s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1820.50s (Giới hạn 3600.00s)
+Nhiệm vụ 10 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 10 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2093.19s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 653.26s (Giới hạn 3600.00s)
+Nhiệm vụ 23 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 23 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1794.98s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2873.61s (Giới hạn 3600.00s)
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 3197.38s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 626.39s (Giới hạn 3600.00s)
+Nhiệm vụ 15 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 15 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 2375.40s (Giới hạn 3600.00s)
+Nhiệm vụ 18 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 18 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1355.42s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2694.60s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3168.04s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Nhiệm vụ 11 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 11 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 4034.24s (Giới hạn 3600.00s)
+[Vehicle 2] Tổng thời gian sau khi xử lý: 3141.45s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 3645.35s (Giới hạn 3600.00s)
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3715.30s (Giới hạn 3600.00s)
+[Vehicle 3] Tổng thời gian sau khi xử lý: 978.27s (Giới hạn 3600.00s)
+Nhiệm vụ 4 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 4 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.101s
+→ Nhiệm vụ có phụ thuộc: 14/25
+Thời gian sinh file: 0.1010s, Reset object: 0.4607s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1031.14s (Giới hạn 3600.00s)
+Nhiệm vụ 20 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 20 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 346.60s (Giới hạn 3600.00s)
+Nhiệm vụ 6 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 6 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 684.94s (Giới hạn 3600.00s)
+Nhiệm vụ 15 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 15 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 499.04s (Giới hạn 3600.00s)
+Nhiệm vụ 1 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 1 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 452.33s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2053.02s (Giới hạn 3600.00s)
+Nhiệm vụ 23 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 23 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1061.49s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 943.55s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1325.17s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2918.06s (Giới hạn 3600.00s)
+Nhiệm vụ 5 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 5 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1420.45s (Giới hạn 3600.00s)
+Nhiệm vụ 19 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 19 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1924.38s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 1659.95s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 4149.34s (Giới hạn 3600.00s)
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2714.15s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2275.09s (Giới hạn 3600.00s)
+Nhiệm vụ 12 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 12 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2133.98s (Giới hạn 3600.00s)
+Nhiệm vụ 4 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 4 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.148s
+→ Nhiệm vụ có phụ thuộc: 13/25
+Thời gian sinh file: 0.1478s, Reset object: 0.5626s
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1010.93s (Giới hạn 3600.00s)
+[Vehicle 1] Tổng thời gian sau khi xử lý: 425.94s (Giới hạn 3600.00s)
+Nhiệm vụ 18 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 18 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1122.74s (Giới hạn 3600.00s)
+Nhiệm vụ 17 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 17 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 988.93s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1690.17s (Giới hạn 3600.00s)
+Nhiệm vụ 5 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 5 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1280.87s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2066.14s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 2238.72s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2618.32s (Giới hạn 3600.00s)
+Nhiệm vụ 10 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 10 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1509.52s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2312.40s (Giới hạn 3600.00s)
+Nhiệm vụ 15 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 15 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 3221.86s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2180.86s (Giới hạn 3600.00s)
+Nhiệm vụ 19 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 19 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 936.98s (Giới hạn 3600.00s)
+Nhiệm vụ 23 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 23 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2028.69s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 3268.60s (Giới hạn 3600.00s)
+Nhiệm vụ 4 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 4 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3671.00s (Giới hạn 3600.00s)
+[Vehicle 1] Tổng thời gian sau khi xử lý: 3637.09s (Giới hạn 3600.00s)
+Thời gian sinh: 0.127s
+→ Nhiệm vụ có phụ thuộc: 9/25
+Thời gian sinh file: 0.1271s, Reset object: 0.4234s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1361.89s (Giới hạn 3600.00s)
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 564.34s (Giới hạn 3600.00s)
+Nhiệm vụ 18 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 18 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 914.87s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 648.17s (Giới hạn 3600.00s)
+Nhiệm vụ 1 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 1 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 761.16s (Giới hạn 3600.00s)
+Nhiệm vụ 0 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 0 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Nhiệm vụ 23 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 23 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3054.08s (Giới hạn 3600.00s)
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1268.25s (Giới hạn 3600.00s)
+Nhiệm vụ 6 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 6 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 1433.91s (Giới hạn 3600.00s)
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 1250.07s (Giới hạn 3600.00s)
+Nhiệm vụ 4 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 4 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 3899.94s (Giới hạn 3600.00s)
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1723.40s (Giới hạn 3600.00s)
+Nhiệm vụ 11 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 11 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2108.58s (Giới hạn 3600.00s)
+Nhiệm vụ 15 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 15 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2349.44s (Giới hạn 3600.00s)
+Nhiệm vụ 2 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 2 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1627.22s (Giới hạn 3600.00s)
+Nhiệm vụ 22 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 22 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2779.21s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2701.51s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2972.36s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 2358.63s (Giới hạn 3600.00s)
+Nhiệm vụ 17 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 17 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 3662.74s (Giới hạn 3600.00s)
+[Vehicle 2] Tổng thời gian sau khi xử lý: 3054.39s (Giới hạn 3600.00s)
+Nhiệm vụ 12 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 12 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Thời gian sinh: 0.134s
+→ Nhiệm vụ có phụ thuộc: 16/25
+Thời gian sinh file: 0.1337s, Reset object: 0.5975s
+[Vehicle 0] Tổng thời gian sau khi xử lý: 772.95s (Giới hạn 3600.00s)
+Nhiệm vụ 8 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 8 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 742.50s (Giới hạn 3600.00s)
+Nhiệm vụ 6 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 6 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 530.53s (Giới hạn 3600.00s)
+Nhiệm vụ 7 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 7 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 946.18s (Giới hạn 3600.00s)
+Nhiệm vụ 1 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 1 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 1110.60s (Giới hạn 3600.00s)
+Nhiệm vụ 16 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 16 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 1289.45s (Giới hạn 3600.00s)
+Nhiệm vụ 21 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 21 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 1387.80s (Giới hạn 3600.00s)
+Nhiệm vụ 3 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 3 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+Nhiệm vụ 14 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 14 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 2418.09s (Giới hạn 3600.00s)
+[Vehicle 3] Tổng thời gian sau khi xử lý: 1797.67s (Giới hạn 3600.00s)
+Nhiệm vụ 9 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 9 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 3281.79s (Giới hạn 3600.00s)
+Nhiệm vụ 13 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 13 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 3] Tổng thời gian sau khi xử lý: 2410.34s (Giới hạn 3600.00s)
+Nhiệm vụ 4 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 4 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2165.36s (Giới hạn 3600.00s)
+Nhiệm vụ 10 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 10 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 1] Tổng thời gian sau khi xử lý: 2099.88s (Giới hạn 3600.00s)
+Nhiệm vụ 5 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 5 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 2] Tổng thời gian sau khi xử lý: 3755.23s (Giới hạn 3600.00s)
+[Vehicle 3] Tổng thời gian sau khi xử lý: 3479.62s (Giới hạn 3600.00s)
+Nhiệm vụ 2 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 2 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 0] Tổng thời gian sau khi xử lý: 2854.14s (Giới hạn 3600.00s)
+Nhiệm vụ 24 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 24 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 2372.49s (Giới hạn 3600.00s)
+Nhiệm vụ 18 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 18 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
+[Vehicle 4] Tổng thời gian sau khi xử lý: 3053.96s (Giới hạn 3600.00s)
+Nhiệm vụ 22 thông báo rằng nó đã hoàn thành để cập nhật các nhiệm vụ phụ thuộc.
+Nhiệm vụ 22 đã hoàn thành và gửi thông báo đến các phương tiện quan sát.
