@@ -11,7 +11,7 @@ ddqn_config = {
     "batch_size": 512,
     "maxlen_mem": 10000000,
     "modify_reward": True,
-    "combine": 0.00
+    "combine": 0.3
 }
 """
 Cấu hình tham số cho agent DDQN.

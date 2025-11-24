@@ -66,7 +66,7 @@ class Vehicle(Observer):
         self.__road_map = road_map
 
         # Tổng lợi nhuận tích lũy của phương tiện
-        self.__total_profit = 0
+        self.__vehicle_profit = 0
 
         # Số lượng lần bị trễ khi hoàn thành nhiệm vụ
         self.__lateness_count = 0
@@ -566,6 +566,7 @@ class Vehicle(Observer):
 
         self.__control_time += total_delay
         logger.debug(f"[Vehicle {self.__vehicle_id}] Tổng thời gian sau khi xử lý: {self.__control_time:.2f}s (Giới hạn {self.__tau:.2f}s)")
+        print(f"[Vehicle {self.__vehicle_id}] Tổng thời gian sau khi xử lý: {self.__control_time:.2f}s (Giới hạn {self.__tau:.2f}s)")
 
         
         while route[0] in end_points:
