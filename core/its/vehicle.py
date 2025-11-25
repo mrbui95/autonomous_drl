@@ -524,11 +524,14 @@ class Vehicle(Observer):
                 )
                 task_info = off_task.get_info()
                 comm_delay = task_info[0] * 8000 / rate
-                comp_delay = task_info[1] / mec_cpu
+                if local_compute:
+                    comp_delay = task_info[1] / local_vehicle_cpu
+                else:
+                    comp_delay = task_info[1] / mec_cpu
+                    main_mission.update_profit(-task_config["cost_coefficient"])
                 cur_delay = comm_delay + comp_delay
                 offload_delay += cur_delay
-
-                main_mission.update_profit(-task_config["cost_coefficient"])
+                
                 # logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
 
             total_delay += offload_delay + on_road_time
