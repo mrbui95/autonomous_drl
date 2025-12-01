@@ -90,7 +90,8 @@ task_config = {
     'task_rate_options': [10, 30, 50], # Các giá trị tốc độ sinh tác vụ (task/s)
     'avg_speed': 10,                   # Vận tốc trung bình của xe (m/s)
     'time_limit': other_config['tau'],                 # Giới hạn thời gian hoàn thành nhiệm vụ (phút)
-    'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ
+    'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ trên MEC Server
+    'offload_mec_cost': 0.05,           # Chi phí khi thực hiện offload task lên MEC Server
     'max_speed': 20                    # Vận tốc cực đại của xe (m/s)
 }
 """
@@ -117,7 +118,7 @@ max_speed : float
 
 mission_config = {
     'total_missions': 25,          # Tổng số nhiệm vụ cần được phân bổ trong hệ thống.
-    'reward_range': [50, 100],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
+    'reward_range': [500, 1000],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
     'num_vehicles': 5,             # Số lượng phương tiện tham gia thực hiện nhiệm vụ.
     'max_missions_per_vehicle': 5,  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
     'estimate_done_in_one_step': 15  # Số lượng nhiệm vụ dự kiến hoàn thành trong một lượt.

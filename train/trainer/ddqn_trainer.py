@@ -344,16 +344,18 @@ class DDQNTrainer:
                         and modify_data["current_wards"][agent_idx][vehicle_id][0] >= 0
                     ):
                         # Tính reward bổ sung
-                        additional_reward = (
-                            (vehicle_id + 1) / mission_config["num_vehicles"]
-                        ) * (
-                            (mission_config["max_missions_per_vehicle"] - agent_idx)
-                            * n_remove_depends
-                            * 50  # fix cứng
-                            - n_waiting * 50  # fix cứng
-                        ) + completed_count * mission_config[
-                            "total_missions"
-                        ]
+                        # additional_reward = (
+                        #     (vehicle_id + 1) / mission_config["num_vehicles"]
+                        # ) * (
+                        #     (mission_config["max_missions_per_vehicle"] - agent_idx)
+                        #     * n_remove_depends
+                        #     * 50  # fix cứng
+                        #     - n_waiting * 50  # fix cứng
+                        # ) + completed_count * mission_config[
+                        #     "total_missions"
+                        # ]
+
+                        additional_reward = self.env.ideal_avg_reward * 0.05
 
                         modify_data["current_wards"][agent_idx][vehicle_id][0] = (
                             profit + additional_reward

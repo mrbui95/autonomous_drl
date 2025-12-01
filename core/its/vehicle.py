@@ -523,13 +523,22 @@ class Vehicle(Observer):
                     current_point, self.__assigned_mec
                 )
                 task_info = off_task.get_info()
+                
+                # Tính toán thời gian xử lý tại local hoặc server
+                local_delay = task_info[1] / local_vehicle_cpu
                 comm_delay = task_info[0] * 8000 / rate
-                if local_compute:
-                    comp_delay = task_info[1] / local_vehicle_cpu
-                else:
-                    comp_delay = task_info[1] / mec_cpu
+                comp_delay = task_info[1] / mec_cpu
+                mec_server_delay = comm_delay + comp_delay + task_config["offload_mec_cost"]
+
+                cur_delay = 0
+                if mec_server_delay < local_delay:
                     main_mission.update_profit(-task_config["cost_coefficient"])
-                cur_delay = comm_delay + comp_delay
+                    cur_delay = comm_delay + comp_delay
+                    logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
+                else:
+                    cur_delay = local_delay
+                    logger.debug(f"[Vehicle {self.__vehicle_id}] Xử lý task tại local: local_delay={local_delay:.2f}s")
+
                 offload_delay += cur_delay
                 
                 # logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
@@ -604,10 +613,11 @@ class Vehicle(Observer):
         remain_profit = main_mission.get_profit() - total_mis_profit
         remain_profit = max(remain_profit, 0)
 
-        profit = total_length * 0.025 + remain_profit
+        
+
         self.__profit += remain_profit
         self.__completed_count += completed_count
-        self.__vehicle_profit += profit
+        self.__vehicle_profit += remain_profit
         logger.debug(f"[Vehicle {self.__vehicle_id}] Profit đạt được: {profit:.2f}, Completed={completed_count}, Total_vehicle_profit={self.__vehicle_profit:.2f}")
 
         # --- Bước 6: Kiểm tra lại thời gian ---

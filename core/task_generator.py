@@ -144,6 +144,7 @@ class TaskGenerator:
             end_point = self.__random.choice(vertices)
             distance = start_point.get_dis_to_point(end_point)
             travel_time = distance / task_config["max_speed"]
+            dead_line = travel_time / other_config['tau'] 
 
             # Đảm bảo nhiệm vụ hợp lệ theo giới hạn thời gian
             while (
@@ -178,6 +179,7 @@ class TaskGenerator:
             mission.set_depend_mission(dependencies)
             mission.set_profit(profit)
             mission.set_mission_id(i)
+            mission.set_deadline(dead_line)
             missions.append(mission)
 
         Mission.mission_counter = 0
