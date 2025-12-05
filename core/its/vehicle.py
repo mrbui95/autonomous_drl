@@ -8,7 +8,8 @@ from utils.patterns.observer import Observer
 from core.geometry.line import Line
 from core.mec.mec_network import MECNetwork
 
-from config.config import task_config
+from config.config import task_config, network_config
+from config.drl_config import reward_config
 
 logger = logging.getLogger(__name__)
 
@@ -497,6 +498,8 @@ class Vehicle(Observer):
         total_delay = distance_to_mission / 10  # vận tốc trung bình: 10 m/s
         logger.debug(f"[Vehicle {self.__vehicle_id}] Bắt đầu di chuyển, delay ban đầu: {total_delay:.2f}s.")
 
+        main_mission.update_profit(- reward_config['r3'] * total_delay * reward_config['moving_time_cost'])
+
         if best_path_to_mission:
             best_path_to_mission.pop(-1)
         route = best_path_to_mission + route
@@ -506,12 +509,19 @@ class Vehicle(Observer):
             segment_idx = road_segments.index((start_point, next_point))
             current_segment = road_segments[segment_idx]
 
+            # Tính toán thời gian di chuyển
+            moving_delay = current_segment.get_distance() * current_segment.get_avg_speed()
+            main_mission.update_profit(- reward_config['r3'] * moving_delay * reward_config['moving_time_cost'])
+
             _, avg_speed = current_segment.get_info()
             offload_tasks = current_segment.get_offloading_tasks()
             offload_delay = 0
             on_road_time = start_point.get_dis_to_point(next_point) / avg_speed
 
             logger.debug(f"[Vehicle {self.__vehicle_id}] Di chuyển từ {start_point} -> {next_point}, tốc độ TB={avg_speed:.2f}, thời gian={on_road_time:.2f}s, offload_tasks={len(offload_tasks)}")
+
+            mec_count = 0
+            local_count = 0
 
             # --- Xử lý offloading task trên đoạn đường ---
             for off_task in offload_tasks:
@@ -525,23 +535,27 @@ class Vehicle(Observer):
                 task_info = off_task.get_info()
                 
                 # Tính toán thời gian xử lý tại local hoặc server
-                local_delay = task_info[1] / local_vehicle_cpu
+                local_delay = task_info[1] / network_config['local_vehicle_cpu_freq']
                 comm_delay = task_info[0] * 8000 / rate
                 comp_delay = task_info[1] / mec_cpu
                 mec_server_delay = comm_delay + comp_delay + task_config["offload_mec_cost"]
 
+
                 cur_delay = 0
                 if mec_server_delay < local_delay:
-                    main_mission.update_profit(-task_config["cost_coefficient"])
+                    mec_count += 1
+                    main_mission.update_profit(- reward_config['r2'] * reward_config["offload_cost"])
                     cur_delay = comm_delay + comp_delay
-                    logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
+                    # logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
                 else:
+                    local_count += 1
                     cur_delay = local_delay
-                    logger.debug(f"[Vehicle {self.__vehicle_id}] Xử lý task tại local: local_delay={local_delay:.2f}s")
 
                 offload_delay += cur_delay
                 
                 # logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: comm_delay={comm_delay:.2f}s, comp_delay={comp_delay:.2f}s, tổng={cur_delay:.2f}s")
+
+            logger.debug(f"[Vehicle {self.__vehicle_id}] Offload task tại MEC: {mec_count}, Xử lý tại Local={local_count}")
 
             total_delay += offload_delay + on_road_time
 
@@ -579,6 +593,9 @@ class Vehicle(Observer):
             end_points.remove(route[0])
             if self.__control_time < self.__tau:
                 completed_count += 1
+                if (self.__control_time < current_mission.get_deadline()):
+                    task_completion_reward = reward_config['r1'] * (current_mission.get_deadline() - self.__control_time) / current_mission.get_deadline() * current_mission.get_profit()
+                    main_mission.update_profit(task_completion_reward)
             else:
                 break
             idx = same_route_missions.index(route[0])
@@ -602,6 +619,9 @@ class Vehicle(Observer):
             logger.warning(f"[Vehicle {self.__vehicle_id}] Hết thời gian thực hiện nhiệm vụ.")
             return
 
+        # Cộng thưởng cho khả năng hoàn thành nhiệm vụ mới
+        main_mission.update_profit(reward_config['r4'] * len(mission.get_dependencies()) * mission.get_profit())
+
         # --- Bước 5: Tính lợi nhuận ---
         total_mis_profit = 0
         while end_points:
@@ -609,6 +629,8 @@ class Vehicle(Observer):
             idx = self.__accepted_missions.index(p)
             total_mis_profit += self.__accepted_missions[idx].get_profit()
             self.__lateness_count += 1
+
+        
 
         remain_profit = main_mission.get_profit() - total_mis_profit
         remain_profit = max(remain_profit, 0)
@@ -618,7 +640,7 @@ class Vehicle(Observer):
         self.__profit += remain_profit
         self.__completed_count += completed_count
         self.__vehicle_profit += remain_profit
-        logger.debug(f"[Vehicle {self.__vehicle_id}] Profit đạt được: {profit:.2f}, Completed={completed_count}, Total_vehicle_profit={self.__vehicle_profit:.2f}")
+        logger.debug(f"[Vehicle {self.__vehicle_id}] Profit đạt được: {remain_profit:.2f}, Completed={completed_count}, Total_vehicle_profit={self.__vehicle_profit:.2f}")
 
         # --- Bước 6: Kiểm tra lại thời gian ---
         if self.__control_time > self.__tau:
@@ -636,7 +658,7 @@ class Vehicle(Observer):
             current_mission.get_mission_id(),
             completed_count,
             len(self.__missions),
-            profit,
+            remain_profit,
         )
 
     # clear_total_reward

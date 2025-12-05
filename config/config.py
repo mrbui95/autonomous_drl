@@ -7,7 +7,7 @@ map_config = {
     "radius": 2500,
     "num_roads": 15,
     "traffic_level": 1,
-    "from_file": 1,
+    "from_file": 0,
 }
 """
 Cấu hình bản đồ cho đối tượng Map.
@@ -57,7 +57,8 @@ DEVICE = 1
 network_config = {
     "maximum_MECs": 20,
     "cpu_freq_range": [100, 300], # 100 -300 (Hz)
-    "best_rate_radius":  100 # 100(m)
+    "best_rate_radius":  100, # 100(m)
+    "local_vehicle_cpu_freq": 5
 }
 """
 Cấu hình các tham số cho mạng MEC (Mobile Edge Computing).
@@ -85,13 +86,13 @@ other_config = {
 
 
 task_config = {
-    'data_size_range': [100, 500],     # Kích thước dữ liệu truyền (kB)
+    'data_size_range': [1000, 5000],     # Kích thước dữ liệu truyền (kB)
     'compute_load_range': [1, 3],      # Khối lượng tính toán (MCycles)
     'task_rate_options': [10, 30, 50], # Các giá trị tốc độ sinh tác vụ (task/s)
     'avg_speed': 10,                   # Vận tốc trung bình của xe (m/s)
     'time_limit': other_config['tau'],                 # Giới hạn thời gian hoàn thành nhiệm vụ (phút)
     'cost_coefficient': 5e-5,          # Hệ số chi phí xử lý tác vụ trên MEC Server
-    'offload_mec_cost': 0.05,           # Chi phí khi thực hiện offload task lên MEC Server
+    'offload_mec_cost': 5e-4,           # Chi phí khi thực hiện offload task lên MEC Server
     'max_speed': 20                    # Vận tốc cực đại của xe (m/s)
 }
 """
@@ -118,7 +119,7 @@ max_speed : float
 
 mission_config = {
     'total_missions': 25,          # Tổng số nhiệm vụ cần được phân bổ trong hệ thống.
-    'reward_range': [500, 1000],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
+    'reward_range': [1000, 2000],     # Khoảng giá trị phần thưởng (hoặc lợi ích) cho mỗi nhiệm vụ.
     'num_vehicles': 5,             # Số lượng phương tiện tham gia thực hiện nhiệm vụ.
     'max_missions_per_vehicle': 5,  # Số lượng nhiệm vụ tối đa mà mỗi phương tiện có thể đảm nhận.
     'estimate_done_in_one_step': 15  # Số lượng nhiệm vụ dự kiến hoàn thành trong một lượt.

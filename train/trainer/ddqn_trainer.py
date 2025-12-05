@@ -137,7 +137,7 @@ class DDQNTrainer:
             truncated_flags,
             done_process_info,
             action_mapping,
-            total_step_profit
+            total_step_profit,
         )
 
     # step_env_ma
@@ -355,7 +355,15 @@ class DDQNTrainer:
                         #     "total_missions"
                         # ]
 
-                        additional_reward = self.env.ideal_avg_reward * 0.05
+                        additional_reward = (
+                            (
+                                n_remove_depends / 20
+                                + (completed_count - n_waiting / 2)
+                                / mission_config["total_missions"]
+                            )
+                            * self.env.ideal_avg_reward
+                            / mission_config["estimate_done_in_one_step"]
+                        )
 
                         modify_data["current_wards"][agent_idx][vehicle_id][0] = (
                             profit + additional_reward
@@ -474,9 +482,15 @@ class DDQNTrainer:
             logger.debug(f"[INFO] Tổng số hành động hợp lệ ở bước {t}: {len(actions)}")
 
             # Thực hiện hành động trong môi trường
-            next_states, rewards, dones, truncated, modified_info, actions, total_step_profit = (
-                self.execute_environment_step(actions, states)
-            )
+            (
+                next_states,
+                rewards,
+                dones,
+                truncated,
+                modified_info,
+                actions,
+                total_step_profit,
+            ) = self.execute_environment_step(actions, states)
             dones = [dones] * len(states)
             logger.debug(f"[ENV] Môi trường trả về rewards: {rewards}")
 

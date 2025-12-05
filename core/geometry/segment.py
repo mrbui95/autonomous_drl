@@ -76,6 +76,9 @@ class Segment:
 
     def get_distance(self):
         return self.__distance
+    
+    def get_avg_speed(self):
+        return self.__avg_speed
 
     def get_status(self):
         return self.__status
