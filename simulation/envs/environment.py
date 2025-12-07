@@ -845,6 +845,7 @@ class Environment(gym.Env):
                 rewards[idx].append(prof_sys)
             else:
                 rewards[idx] = [prof_sys + wrong_action_penalty[idx]]
+                total_step_profit += wrong_action_penalty[idx]
             if vehicle.is_on_time():
                 intime = True
         logger.info(

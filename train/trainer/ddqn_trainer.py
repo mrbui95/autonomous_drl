@@ -869,6 +869,8 @@ class DDQNTrainer:
         columns = [f"Agent {i}" for i in range(len(self.agents))]
         df_scores = pd.DataFrame(self.score_history, columns=columns)
         df_scores["Max"] = df_scores.max(axis=1)  # Cột phần thưởng tối đa
+        df_scores["Profit"] = df_scores.sum(axis=1)
+
 
         # Khởi tạo figure và trục
         fig, ax = plt.subplots(figsize=(12, 9))
@@ -882,8 +884,13 @@ class DDQNTrainer:
         )
 
         # Vẽ trung bình động phần thưởng tối đa bằng màu đỏ
-        df_scores["Max"].rolling(self.score_window_size).mean().plot(
-            ax=ax, color="red", linewidth=2, label="Max Reward"
+        # df_scores["Max"].rolling(self.score_window_size).mean().plot(
+        #     ax=ax, color="red", linewidth=2, label="Max Reward"
+        # )
+
+        # Vẽ trung bình động phần thưởng tối đa bằng màu đỏ
+        df_scores["Profit"].rolling(self.score_window_size).mean().plot(
+            ax=ax, color="red", linewidth=2, label="Total Profit"
         )
 
         # Thêm lưới, chú thích và bố cục

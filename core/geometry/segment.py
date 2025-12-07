@@ -23,7 +23,7 @@ class Segment:
         __distance (float): Chiều dài đoạn, có thể tính tự động.
         __offloading_tasks (list): Danh sách các tác vụ được offload qua đoạn.
         __task_rate (float | None): Tốc độ tạo tác vụ trên đoạn.
-        __avg_speed (float | None): Tốc độ trung bình di chuyển trên đoạn.
+        __avg_speed (float | None): Tốc độ trung bình di chuyển trên đoạn. (m/s)
     """
 
     def __init__(
