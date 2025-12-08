@@ -355,11 +355,9 @@ class DDQNTrainer:
                         #     "total_missions"
                         # ]
 
-                        additional_reward = self.env.ideal_avg_reward * 0.05
+                        additional_reward = self.env.ideal_avg_reward / mission_config["total_missions"] *(completed_count  + (n_remove_depends - n_waiting) * 0.1) * 0.5
 
-                        modify_data["current_wards"][agent_idx][vehicle_id][0] = (
-                            profit + additional_reward
-                        )
+                        modify_data["current_wards"][agent_idx][vehicle_id][0] += additional_reward
                         break
 
                 reward_changed_flags[step_idx] = True
