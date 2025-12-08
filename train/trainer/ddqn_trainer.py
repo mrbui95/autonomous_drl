@@ -137,7 +137,7 @@ class DDQNTrainer:
             truncated_flags,
             done_process_info,
             action_mapping,
-            total_step_profit
+            total_step_profit,
         )
 
     # step_env_ma
@@ -344,6 +344,17 @@ class DDQNTrainer:
                         and modify_data["current_wards"][agent_idx][vehicle_id][0] >= 0
                     ):
                         # Tính reward bổ sung
+                        additional_reward = (
+                            (vehicle_id + 1) / mission_config["num_vehicles"]
+                        ) * (
+                            (mission_config["max_missions_per_vehicle"] - agent_idx)
+                            * n_remove_depends
+                            * 50  # fix cứng
+                            - n_waiting * 50  # fix cứng
+                        ) + completed_count * mission_config[
+                            "total_missions"
+                        ]
+
                         # additional_reward = (
                         #     (vehicle_id + 1) / mission_config["num_vehicles"]
                         # ) * (
@@ -472,9 +483,15 @@ class DDQNTrainer:
             logger.debug(f"[INFO] Tổng số hành động hợp lệ ở bước {t}: {len(actions)}")
 
             # Thực hiện hành động trong môi trường
-            next_states, rewards, dones, truncated, modified_info, actions, total_step_profit = (
-                self.execute_environment_step(actions, states)
-            )
+            (
+                next_states,
+                rewards,
+                dones,
+                truncated,
+                modified_info,
+                actions,
+                total_step_profit,
+            ) = self.execute_environment_step(actions, states)
             dones = [dones] * len(states)
             logger.debug(f"[ENV] Môi trường trả về rewards: {rewards}")
 
@@ -853,6 +870,8 @@ class DDQNTrainer:
         columns = [f"Agent {i}" for i in range(len(self.agents))]
         df_scores = pd.DataFrame(self.score_history, columns=columns)
         df_scores["Max"] = df_scores.max(axis=1)  # Cột phần thưởng tối đa
+        df_scores["Profit"] = df_scores.sum(axis=1)
+
 
         # Khởi tạo figure và trục
         fig, ax = plt.subplots(figsize=(12, 9))
@@ -866,8 +885,13 @@ class DDQNTrainer:
         )
 
         # Vẽ trung bình động phần thưởng tối đa bằng màu đỏ
-        df_scores["Max"].rolling(self.score_window_size).mean().plot(
-            ax=ax, color="red", linewidth=2, label="Max Reward"
+        # df_scores["Max"].rolling(self.score_window_size).mean().plot(
+        #     ax=ax, color="red", linewidth=2, label="Max Reward"
+        # )
+
+        # Vẽ trung bình động phần thưởng tối đa bằng màu đỏ
+        df_scores["Profit"].rolling(self.score_window_size).mean().plot(
+            ax=ax, color="red", linewidth=2, label="Total Profit"
         )
 
         # Thêm lưới, chú thích và bố cục

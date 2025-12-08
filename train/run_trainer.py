@@ -13,7 +13,7 @@ from config.drl_config import ddqn_config, epoch_size, checkpoint_index
 from ray.tune.registry import register_env
 
 logging.basicConfig(
-    level=logging.INFO,  # có thể đổi thành INFO khi muốn giảm log, DEBUG để hiển thị toàn bộ log
+    level=logging.DEBUG,  # có thể đổi thành INFO khi muốn giảm log, DEBUG để hiển thị toàn bộ log
     format="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
     datefmt="%H:%M:%S",
     handlers=[
@@ -204,7 +204,7 @@ def train_agents(
                 env.close()
                 break
         except Exception as e:
-            logger.error(f"[ERROR] Running error: {e}")
+            logger.error(f"[ERROR] Running error: {e}", e)
 
 # ddqn
 def run_ddqn_training(**kwargs):

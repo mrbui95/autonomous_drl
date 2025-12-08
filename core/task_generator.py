@@ -7,7 +7,7 @@ from core.its.mission import Mission
 from core.its.task import Task
 from utils.numpy_json_encoder import NumpyJSONEncoder
 
-from config.config import map_config, task_config, mission_config
+from config.config import map_config, task_config, mission_config, other_config
 
 
 class TaskGenerator:
@@ -240,6 +240,7 @@ class TaskGenerator:
                         else:
                             dependencies.append(dep_id)
             avoid_cycles[i] = dependencies
+            deadline = (len(dependencies) + 1) / mission_config['max_missions_per_vehicle'] * other_config['tau'] + self.__random.uniform(-1, 1) * other_config['tau'] / mission_config['total_missions']
 
             profit = self.__random.integers(
                 mission_config["reward_range"][0], mission_config["reward_range"][1]
@@ -249,6 +250,7 @@ class TaskGenerator:
                     "start_point": start_p,
                     "end_point": end_p,
                     "dependencies": dependencies,
+                    "deadline": deadline,
                     "profit": profit,
                 }
             )

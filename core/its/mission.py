@@ -126,6 +126,10 @@ class Mission(Subject):
         """Thiết lập thời hạn hoàn thành nhiệm vụ"""
         self.__deadline = deadline
 
+    def get_deadline(self):
+        """Trả về thời hạn hoàn thành nhiệm vụ"""
+        return self.__deadline
+    
     def update_profit(self, delta):
         """Cập nhật lợi nhuận bằng cách cộng thêm giá trị mới."""
         self.__profit += delta

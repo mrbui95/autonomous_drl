@@ -27,3 +27,12 @@ Các tham số:
 - modify_reward (bool): Cờ xác định có điều chỉnh phần thưởng hay không.
 - combine (float): Xác suất sử dụng global memory thay vì local memory khi lấy mini-batch.
 """
+
+reward_config = {
+    "r1": 1,
+    "r2": 1,
+    "r3": 1,
+    "r4": 1,
+    "offload_cost": 0.05,
+    "moving_time_cost": 0.05,
+}
